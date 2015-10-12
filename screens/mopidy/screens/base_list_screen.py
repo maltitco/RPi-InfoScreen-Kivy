@@ -4,10 +4,6 @@ from kivy.uix.listview import ListItemLabel
 from screens.mopidy.screens.base_screen import BaseScreen
 from screens.mopidy.utils import Utils
 
-__author__ = 'ander'
-
-
-
 
 class MopidyListItem(ButtonBehavior, ListItemLabel):
 
