@@ -23,14 +23,6 @@
             orientation: 'horizontal'
             size_hint_y: 0.1
 
-            canvas.before:
-                Color:
-                    rgba: 0, 0, 0, 0.85
-                Rectangle:
-                    # self here refers to the widget i.e BoxLayout
-                    pos: self.pos
-                    size: self.size
-
             Label:
                 id: previous_screen
                 text: "No song"
