@@ -1,0 +1,10 @@
+{
+    "screen": "MopidyScreen",
+    "kv": "mopidy.kv",
+    "enabled": true,
+    "params": {
+        "ip": "localhost",
+        "port": 6680
+    }
+
+}

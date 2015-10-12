@@ -1,0 +1,10 @@
+{
+    "screen": "FootballScreen",
+    "kv": "football.kv",
+    "enabled": false,
+    "dependencies": ["requests", "BeautifulSoup"],
+    "params": {
+        "teams": ["Chelsea"],
+        "leagues": ["119001074"]
+    }
+}
