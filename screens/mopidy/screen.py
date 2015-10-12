@@ -115,7 +115,7 @@ class MopidyConnectedScreen(Widget):
             self.ids.screen_manager.transition.direction = 'left'
             name = self.ids.screen_manager.next()
         self.ids.screen_manager.current = name
-        self.ids.current_screen.text = name
+        self.ids.current_screen.text = "[b][color=ff3333]" + name + "[/color][/b]"
         self.ids.previous_screen.text = self.ids.screen_manager.previous()
         self.ids.next_screen.text = self.ids.screen_manager.next()
 

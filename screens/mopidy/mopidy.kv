@@ -10,6 +10,7 @@
     BoxLayout:
         orientation: 'vertical'
         size: main_layout.size
+        padding: [50, 0, 50, 0]
 
         canvas.before:
             Color:
@@ -37,6 +38,7 @@
             Label:
                 id: current_screen
                 text: "No song"
+                markup: True
 
             Label:
                 id: next_screen
@@ -121,13 +123,25 @@
     selected_color: 0, 0.5, 0, 1
 
 <SearchScreen>
+
     BoxLayout:
         orientation: 'vertical'
 
-        TextInput:
-            id: search_input
-            multiline: False
-            size_y: 36
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: '30sp'
+
+            TextInput:
+                id: search_input
+                multiline: False
+                size_hint_x: 0.9
+
+
+            Image:
+                id: search_button
+                size_hint_x: 0.1
+
 
         ListView:
             id: list_view

@@ -26,8 +26,10 @@ class Utils:
     def get_title_string(tl_track):
         name = "No name"
         try:
-            if 'track' in tl_track and 'name' in tl_track['track'] and len(tl_track['track']['name']) > 0:
+            if 'track' in tl_track:
                 name = tl_track['track']['name']
+            else:
+                name = tl_track['name']
         except Exception:
             pass
         return name
