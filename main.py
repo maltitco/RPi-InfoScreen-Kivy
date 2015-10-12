@@ -28,7 +28,11 @@ class InfoScreenApp(App):
         # Window size is hardcoded for resolution of official Raspberry Pi
         # display. Can be altered but plugins may not display correctly.
         Window.size = (800, 480)
-        return InfoScreen(plugins=plugins)
+        self.info_screen = InfoScreen(plugins=plugins)
+        return self.info_screen
+
+    def on_stop(self):
+        self.info_screen.on_stop()
 
 if __name__ == "__main__":
     # Get a list of installed plugins

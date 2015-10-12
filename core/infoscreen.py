@@ -1,6 +1,7 @@
 import imp
 
 from kivy.uix.floatlayout import FloatLayout
+import traceback
 
 from core.failedscreen import FailedScreen
 
@@ -65,6 +66,7 @@ class InfoScreen(FloatLayout):
                 except Exception, e:
                     # Add the screen name and error message to our list
                     failedscreens.append((p["name"], repr(e)))
+                    traceback.print_exc()
 
                 else:
                     # We can add the screen to our list of available screens.
@@ -82,6 +84,13 @@ class InfoScreen(FloatLayout):
             # the user sees.
             self.scrmgr.add_widget(self.failscreen)
             self.scrmgr.current = "FAILEDSCREENS"
+
+    def on_stop(self):
+        for screen in self.scrmgr.screens:
+            try:
+                screen.on_stop()
+            except AttributeError:
+                pass
 
     def next_screen(self, rev=False):
         if rev:

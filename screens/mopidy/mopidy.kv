@@ -1,0 +1,141 @@
+<MopidyConnectedScreen>:
+    id: main_layout
+
+    AsyncImage:
+        size: main_layout.size
+        id: image_background
+        allow_stretch: True
+        keep_ratio: False
+
+    BoxLayout:
+        orientation: 'vertical'
+        size: main_layout.size
+
+        canvas.before:
+            Color:
+                rgba: 0, 0, 0, 0.85
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.1
+
+            canvas.before:
+                Color:
+                    rgba: 0, 0, 0, 0.85
+                Rectangle:
+                    # self here refers to the widget i.e BoxLayout
+                    pos: self.pos
+                    size: self.size
+
+            Label:
+                id: previous_screen
+                text: "No song"
+
+            Label:
+                id: current_screen
+                text: "No song"
+
+            Label:
+                id: next_screen
+                text: "No song"
+
+        ScreenManager:
+            id: screen_manager
+            size_hint_y: 0.9
+
+<NowPlayingMainScreen>
+
+    BoxLayout:
+        orientation: 'vertical'
+
+        ScreenManager:
+            id: screen_manager
+            size_hint_y: 0.8
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.1
+
+            Image:
+                id: previous_button
+
+            Image:
+                id: play_pause_button
+
+            Image:
+                id: next_button
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.1
+
+            Label:
+                id: current_pos
+                text: "0:00"
+                size_hint_x: 0.1
+
+            Slider:
+                id: slider
+                size_hint_x: 0.8
+
+            Label:
+                id: duration
+                text: "0:00"
+                size_hint_x: 0.1
+
+<NowPlayingScreenSong>:
+
+    BoxLayout:
+        orientation: 'horizontal'
+
+        AsyncImage:
+            id: image
+            size_hint_y: 1
+            size_hint_x: 1
+            allow_stretch: True
+            keep_ratio: True
+
+        BoxLayout:
+            orientation: 'vertical'
+
+            Label:
+                id: title
+                text: "No song"
+
+            Label:
+                id: album
+                text: "No song"
+
+            Label:
+                id: artist
+                text: "No song"
+
+<TracklistScreen>
+    ListView:
+        id: list_view
+
+<MopidyListItem>
+    selected_color: 0, 0.5, 0, 1
+
+<SearchScreen>
+    BoxLayout:
+        orientation: 'vertical'
+
+        TextInput:
+            id: search_input
+            multiline: False
+            size_y: 36
+
+        ListView:
+            id: list_view
+
+
+
+
+
+
+
+
