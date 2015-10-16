@@ -31,7 +31,11 @@ class SearchScreen(BaseListScreen):
 
     def result_loaded(self, result, id):
         if id == Utils.id_search_result:
-            if len(result) > 1 and 'tracks' in result[1]:
-                self.adapter.data = result[1]['tracks']
+            if len(result) > 1:
+                data = []
+                for result_list in result:
+                    if 'tracks' in result_list:
+                        data.extend(result_list['tracks'])
+                self.adapter.data = data
             else:
                 self.adapter.data = []

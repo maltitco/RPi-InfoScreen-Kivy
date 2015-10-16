@@ -1,5 +1,7 @@
 from functools import partial
 import json
+from kivy import Config
+from kivy.animation import Animation
 from kivy.clock import Clock
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
@@ -10,6 +12,7 @@ from threading import Thread
 import sys
 from ws4py.client.threadedclient import WebSocketClient
 from screens.mopidy.screens.now_playing_screen import NowPlayingMainScreen
+from screens.mopidy.screens.playlists_screen import PlayListsScreen
 from screens.mopidy.screens.search_screen import SearchScreen
 from screens.mopidy.screens.tracklist import TracklistScreen
 from screens.mopidy.utils import Utils
@@ -18,10 +21,7 @@ from mopidy.audio import PlaybackState
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 
-
 class MopidyWebSocketClient(WebSocketClient):
-
-
 
     def opened(self):
         Clock.schedule_once(self.main_listener.on_connected, -1)
@@ -81,6 +81,9 @@ class MopidyWebSocketClient(WebSocketClient):
 
         elif message['id'] == Utils.id_search_result:
             Clock.schedule_once(partial(self.listener.result_loaded, message['result'], message['id']), -1)
+        elif message['id'] == Utils.id_playlists_loaded:
+            Clock.schedule_once(partial(self.listener.playlists_loaded, message['result']), -1)
+
 
 class MopidyConnectedScreen(Widget):
 
@@ -93,11 +96,13 @@ class MopidyConnectedScreen(Widget):
         self.ids.screen_manager.add_widget(NowPlayingMainScreen(self.ws, name="Now Playing"))
         self.ids.screen_manager.add_widget(TracklistScreen(self.ws, name="Tracklist"))
         self.ids.screen_manager.add_widget(SearchScreen(self.ws, name="Search"))
+        self.ids.screen_manager.add_widget(PlayListsScreen(self.ws, name="Playlists"))
         self.change_screen(1)
 
     def start_data(self):
         self.ws.send(Utils.get_message(Utils.id_tracklist_loaded, 'core.tracklist.get_tl_tracks'))
         self.ws.send(Utils.get_message(Utils.id_current_track_loaded, 'core.playback.get_current_tl_track'))
+        self.ws.send(Utils.get_message(Utils.id_playlists_loaded, 'core.playlists.as_list'))
 
     def previous_screen(self, event):
         if self.ids.previous_screen.collide_point(*event.pos):
@@ -118,6 +123,9 @@ class MopidyConnectedScreen(Widget):
         self.ids.current_screen.text = "[b][color=ff3333]" + name + "[/color][/b]"
         self.ids.previous_screen.text = self.ids.screen_manager.previous()
         self.ids.next_screen.text = self.ids.screen_manager.next()
+
+        #anim = Animation(x=0)
+        #anim.start(self.ids.current_screen)
 
     def load_cover(self, tl_track):
         if tl_track is not None:
@@ -168,6 +176,11 @@ class MopidyConnectedScreen(Widget):
     def result_loaded(self, result, id, td):
         for screen in self.ids.screen_manager.screens:
             screen.result_loaded(result, id)
+
+    def playlists_loaded(self, result, td):
+        for screen in self.ids.screen_manager.screens:
+            screen.playlists_loaded(result)
+
 
 class NotConnectedScreen(Label):
 

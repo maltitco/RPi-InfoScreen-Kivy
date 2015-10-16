@@ -35,3 +35,6 @@ class BaseScreen(Screen):
 
     def result_loaded(self, result, id):
         pass
+
+    def playlists_loaded(self, result):
+        pass

@@ -11,6 +11,7 @@ class Utils:
     id_current_time_position_loaded = 13
     id_current_status_loaded = 14
     id_search_result = 15
+    id_playlists_loaded = 16
 
     @staticmethod
     def format_time_to_string(seconds_total):
