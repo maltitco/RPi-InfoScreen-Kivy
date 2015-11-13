@@ -97,6 +97,13 @@ class MopidyConnectedScreen(Widget):
         self.ids.screen_manager.add_widget(TracklistScreen(self.ws, name="Tracklist"))
         self.ids.screen_manager.add_widget(SearchScreen(self.ws, name="Search"))
         self.ids.screen_manager.add_widget(PlayListsScreen(self.ws, name="Playlists"))
+
+
+        self.current_screen_x = self.ids.current_screen.x
+        self.previous_screen_x = self.ids.previous_screen.x
+        self.next_screen_x = self.ids.next_screen.text
+
+        self.screen_change_direction = 0
         self.change_screen(1)
 
     def start_data(self):
@@ -113,6 +120,7 @@ class MopidyConnectedScreen(Widget):
             self.change_screen(1)
 
     def change_screen(self, direction):
+        self.screen_change_direction = direction
         if direction == -1:
             self.ids.screen_manager.transition.direction = 'right'
             name = self.ids.screen_manager.previous()
@@ -124,8 +132,7 @@ class MopidyConnectedScreen(Widget):
         self.ids.previous_screen.text = self.ids.screen_manager.previous()
         self.ids.next_screen.text = self.ids.screen_manager.next()
 
-        #anim = Animation(x=0)
-        #anim.start(self.ids.current_screen)
+
 
     def load_cover(self, tl_track):
         if tl_track is not None:
