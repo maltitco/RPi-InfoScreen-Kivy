@@ -103,6 +103,9 @@ class MopidyConnectedScreen(Widget):
         self.previous_screen_x = self.ids.previous_screen.x
         self.next_screen_x = self.ids.next_screen.text
 
+        print os.path.dirname(os.path.abspath(__file__)) + "/screens/images/background.png"
+        self.ids.image_background.source = os.path.dirname(os.path.abspath(__file__)) + "/screens/images/background.png"
+
         self.screen_change_direction = 0
         self.change_screen(1)
 
@@ -131,7 +134,6 @@ class MopidyConnectedScreen(Widget):
         self.ids.current_screen.text = "[b][color=ff3333]" + name + "[/color][/b]"
         self.ids.previous_screen.text = self.ids.screen_manager.previous()
         self.ids.next_screen.text = self.ids.screen_manager.next()
-
 
 
     def load_cover(self, tl_track):
