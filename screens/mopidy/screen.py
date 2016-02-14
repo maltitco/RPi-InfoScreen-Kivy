@@ -11,6 +11,8 @@ import os
 from threading import Thread
 import sys
 from ws4py.client.threadedclient import WebSocketClient
+
+from screens.mopidy.screens.library_screen import LibraryScreen
 from screens.mopidy.screens.now_playing_screen import NowPlayingMainScreen
 from screens.mopidy.screens.playlists_screen import PlayListsScreen
 from screens.mopidy.screens.search_screen import SearchScreen
@@ -79,7 +81,7 @@ class MopidyWebSocketClient(WebSocketClient):
                 print "play"
                 Clock.schedule_once(partial(self.listener.track_playback_resumed, self.listener.current_tl_track, self.time_position), 0.2)
 
-        elif message['id'] == Utils.id_search_result:
+        elif message['id'] == Utils.id_search_result or message['id'] == Utils.id_browse_loaded:
             Clock.schedule_once(partial(self.listener.result_loaded, message['result'], message['id']), -1)
         elif message['id'] == Utils.id_playlists_loaded:
             Clock.schedule_once(partial(self.listener.playlists_loaded, message['result']), -1)
@@ -94,7 +96,8 @@ class MopidyConnectedScreen(Widget):
         self.ids.previous_screen.on_touch_up = self.previous_screen
         self.ids.next_screen.on_touch_up = self.next_screen
         self.ids.screen_manager.add_widget(NowPlayingMainScreen(self.ws, name="Now Playing"))
-        self.ids.screen_manager.add_widget(TracklistScreen(self.ws, name="Tracklist"))
+        self.ids.screen_manager.add_widget(TracklistScreen(self.ws, name="TrackList"))
+        self.ids.screen_manager.add_widget(LibraryScreen(self.ws, name="Library"))
         self.ids.screen_manager.add_widget(SearchScreen(self.ws, name="Search"))
         self.ids.screen_manager.add_widget(PlayListsScreen(self.ws, name="Playlists"))
 
@@ -113,6 +116,7 @@ class MopidyConnectedScreen(Widget):
         self.ws.send(Utils.get_message(Utils.id_tracklist_loaded, 'core.tracklist.get_tl_tracks'))
         self.ws.send(Utils.get_message(Utils.id_current_track_loaded, 'core.playback.get_current_tl_track'))
         self.ws.send(Utils.get_message(Utils.id_playlists_loaded, 'core.playlists.as_list'))
+        self.ws.send(Utils.get_message(Utils.id_browse_loaded, "core.library.browse", {'uri': None}))
 
     def previous_screen(self, event):
         if self.ids.previous_screen.collide_point(*event.pos):
