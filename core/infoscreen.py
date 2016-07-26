@@ -36,7 +36,7 @@ class InfoScreen(FloatLayout):
         failedscreens = []
 
         # Create a reference to the screenmanager instance
-        # self.scrmgr = self.ids.iscreenmgr
+        self.scrmgr = self.ids.iscreenmgr
 
         # Loop over plugins
         for p in plugins:
