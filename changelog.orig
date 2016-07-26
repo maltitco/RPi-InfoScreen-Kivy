@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+=======
 v0.4.1 Bugfix
 
 - Webserver bug fix
@@ -23,6 +25,7 @@ Webserver:
 - Screens can provide custom web pages
 
 
+>>>>>>> upstream_org/master
 v0.3.1 - Quick update
 
 New Screen:

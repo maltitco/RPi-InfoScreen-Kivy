@@ -1,6 +1,9 @@
 #:kivy 1.0.9
 <InfoScreen>
+<<<<<<< HEAD
+=======
     scrmgr: iscreenmgr
+>>>>>>> upstream_org/master
     id: iscreen
 
     ScreenManager:

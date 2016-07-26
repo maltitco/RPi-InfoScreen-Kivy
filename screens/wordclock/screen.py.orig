@@ -30,6 +30,13 @@ class WordClockLetter(Label):
         # Variable for the duration of the animated fade
         self.fadetime = 1
 
+<<<<<<< HEAD
+    def toggle(self, on):
+        if on:
+            colour = [0, 0.8, 0.8, 1]
+        else:
+            colour = [0.15, 0.15, 0.15, 1]
+=======
         self.off_colour = [0.15, 0.15, 0.15, 1]
         self.on_colour = kwargs["colour"]
 
@@ -38,6 +45,7 @@ class WordClockLetter(Label):
             colour = self.on_colour
         else:
             colour = self.off_colour
+>>>>>>> upstream_org/master
 
         # Add some animation effect to fade between different times.
         if on != self.oldstate:
@@ -56,11 +64,15 @@ class WordClockScreen(Screen):
         # Set up some variables to help load the chosen layout.
         self.basepath = os.path.dirname(os.path.abspath(__file__))
         self.layouts = os.path.join(self.basepath, "layouts")
+<<<<<<< HEAD
+        self.lang = kwargs["params"]["language"]
+=======
         self.lang = kwargs["params"]["language"].lower()
         self.colour = self.get_colour(kwargs["params"]["colour"])
 
     def get_colour(self, colour):
         return [x/255.0 for x in colour] + [1]
+>>>>>>> upstream_org/master
 
     def on_enter(self):
         # We only want to set up the screen once
@@ -82,7 +94,11 @@ class WordClockScreen(Screen):
 
         # Is our language one where we need to increment the hour after 30 mins
         # e.g. 9:40 is "Twenty to ten"
+<<<<<<< HEAD
+        if self.config.HOUR_INCREMENT and (minute > 30):
+=======
         if self.config.HOUR_INCREMENT and (minute > self.config.HOUR_INCREMENT_TIME):
+>>>>>>> upstream_org/master
             hour += 1
 
         # Convert rounded time to string
@@ -114,7 +130,11 @@ class WordClockScreen(Screen):
             tm = d.get("all", []) + d[h] + d[m] + d.get(ampm, [])
 
             # Build a map of all letters saying whether they're on or off
+<<<<<<< HEAD
+            st = [x in tm for x in range(120)]
+=======
             st = [x in tm for x in range(len(self.config.LAYOUT))]
+>>>>>>> upstream_org/master
 
             # Create a list of tuples of (letter, state)
             updt = zip(self.letters, st)
@@ -154,8 +174,12 @@ class WordClockScreen(Screen):
             # Create a letter object
             word = WordClockLetter(text=ltr,
                                    size=self.config.SIZE,
+<<<<<<< HEAD
+                                   font_size=self.config.FONTSIZE)
+=======
                                    font_size=self.config.FONTSIZE,
                                    colour=self.colour)
+>>>>>>> upstream_org/master
 
             # add it to our list...
             grid.add_widget(word)

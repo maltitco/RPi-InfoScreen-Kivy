@@ -2,7 +2,10 @@
 copyscores.sh
 copypylms.sh
 *.NOTES
+<<<<<<< HEAD
+=======
 cache/
+>>>>>>> upstream_org/master
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -62,3 +65,10 @@ docs/_build/
 
 # PyBuilder
 target/
+<<<<<<< HEAD
+
+.idea/
+.git/info/exclude
+*~
+=======
+>>>>>>> upstream_org/master
