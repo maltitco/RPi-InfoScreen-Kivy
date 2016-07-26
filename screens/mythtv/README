@@ -1,0 +1,11 @@
+MythTV Status
+-------------
+
+This plugin has three dependencies:
+- MytvTV python bindings
+- MySQLdb
+- lxml
+
+You can google instructions for the last two. However, for the first one, you just need to copy the MythTV folder from "/usr/lib/python2.7/dist-packages/" on your MythTV backend.
+
+You also need to copy config.xml from your myth box (found at ~/.mythtv) to a ~/.mythtv folder on your raspberry pi.

@@ -1,0 +1,42 @@
+v0.3.1 - Quick update
+
+New Screen:
+- Photo album slideshow
+
+
+v0.3 - Third VERSION
+
+New Screens:
+- Energenie control
+- Agenda (using Google calendars)
+
+
+v0.2.1 - SqueezePlayer bugfixes
+
+Bug Fixes:
+https://github.com/elParaguayo/RPi-InfoScreen-Kivy/issues/30
+https://github.com/elParaguayo/RPi-InfoScreen-Kivy/issues/31
+https://github.com/elParaguayo/RPi-InfoScreen-Kivy/issues/32
+https://github.com/elParaguayo/RPi-InfoScreen-Kivy/issues/33
+https://github.com/elParaguayo/RPi-InfoScreen-Kivy/issues/34
+
+New:
+Blurred background on SqueezePlayer screen to make controls look sharper.
+
+
+v0.2 - Second Version
+Bugfixes for v0.1 screens
+
+New Screens:
+- MythTV upcoming recordings (disabled by default)
+- SqueezePlayer control (disabled by default)
+- Wordclock
+
+Known issues:
+- Those weather images are still flashing...
+
+
+v0.1 - First version
+
+Known issues:
+- Flashing images on weather forecast screen.

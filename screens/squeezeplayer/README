@@ -1,0 +1,16 @@
+Squeezeplayer Screen
+--------------------
+
+Setting up:
+
+Enter the IP address of the machine running the Logitech Media Server in the conf.json file.
+
+If you've changed the default ports then you should update those values too.
+
+
+What the screen does:
+
+- Shows "Now Playing" information
+- Basic player controls
+- Shows playlist (including ability to select track to play)
+- Shows players (includes ability to select different players to control)
