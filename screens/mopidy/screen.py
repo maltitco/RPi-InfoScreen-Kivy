@@ -30,11 +30,14 @@ class MopidyWebSocketClient(WebSocketClient):
 
     def closed(self, code, reason=None):
         Clock.schedule_once(self.main_listener.on_disconnected, -1)
-        print "Closed down", code, reason
+        print("Closed down", code, reason)
 
     def received_message(self, m):
+        print('received_message.....start')
+        print(str(m))
+        print('received_message.....end')
         message = json.loads(str(m))
-        print message
+        print(message)
         if 'event' in message:
             self.handle_event(message)
         else:
@@ -86,37 +89,49 @@ class MopidyWebSocketClient(WebSocketClient):
         elif message['id'] == Utils.id_playlists_loaded:
             Clock.schedule_once(partial(self.listener.playlists_loaded, message['result']), -1)
 
-
 class MopidyConnectedScreen(Widget):
 
     def __init__(self, ws, **kwargs):
         super(MopidyConnectedScreen, self).__init__(**kwargs)
         self.ws = ws
+        self.main_screen = self
         self.current_tl_track = None
         self.ids.previous_screen.on_touch_up = self.previous_screen
         self.ids.next_screen.on_touch_up = self.next_screen
         self.ids.screen_manager.add_widget(NowPlayingMainScreen(self.ws, name="Now Playing"))
         self.ids.screen_manager.add_widget(TracklistScreen(self.ws, name="TrackList"))
-        self.ids.screen_manager.add_widget(LibraryScreen(self.ws, name="Library"))
+        self.ids.screen_manager.add_widget(LibraryScreen(self.ws, main_screen=self.main_screen, name="Library"))
         self.ids.screen_manager.add_widget(SearchScreen(self.ws, name="Search"))
         self.ids.screen_manager.add_widget(PlayListsScreen(self.ws, name="Playlists"))
-
 
         self.current_screen_x = self.ids.current_screen.x
         self.previous_screen_x = self.ids.previous_screen.x
         self.next_screen_x = self.ids.next_screen.text
 
-        print os.path.dirname(os.path.abspath(__file__)) + "/screens/images/background.png"
-        self.ids.image_background.source = os.path.dirname(os.path.abspath(__file__)) + "/screens/images/background.png"
+        print os.path.dirname(
+            os.path.abspath(
+                __file__)) + "/../mopidy/screens/images/background.png"
+        self.ids.image_background.source = os.path.dirname(
+            os.path.abspath(
+                __file__)) + "/../mopidy/screens/images/background.png"
 
         self.screen_change_direction = 0
         self.change_screen(1)
 
     def start_data(self):
-        self.ws.send(Utils.get_message(Utils.id_tracklist_loaded, 'core.tracklist.get_tl_tracks'))
-        self.ws.send(Utils.get_message(Utils.id_current_track_loaded, 'core.playback.get_current_tl_track'))
-        self.ws.send(Utils.get_message(Utils.id_playlists_loaded, 'core.playlists.as_list'))
-        self.ws.send(Utils.get_message(Utils.id_browse_loaded, "core.library.browse", {'uri': None}))
+        self.ws.send(
+            Utils.get_message(
+                Utils.id_tracklist_loaded, 'core.tracklist.get_tl_tracks'))
+        self.ws.send(
+            Utils.get_message(
+                Utils.id_current_track_loaded,
+                'core.playback.get_current_tl_track'))
+        self.ws.send(
+            Utils.get_message(
+                Utils.id_playlists_loaded, 'core.playlists.as_list'))
+        self.ws.send(
+            Utils.get_message(
+                Utils.id_browse_loaded, "core.library.browse", {'uri': None}))
 
     def previous_screen(self, event):
         if self.ids.previous_screen.collide_point(*event.pos):
@@ -240,7 +255,3 @@ class MopidyScreen(Screen):
 
     def on_stop(self):
         self.ws.close()
-
-
-
-

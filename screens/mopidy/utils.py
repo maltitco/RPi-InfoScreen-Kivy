@@ -66,4 +66,3 @@ class Utils:
         if params is not None:
             message['params'] = params
         return json.dumps(message)
-
