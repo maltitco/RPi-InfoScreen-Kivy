@@ -11,6 +11,7 @@ import os
 from threading import Thread
 import sys
 from ws4py.client.threadedclient import WebSocketClient
+from mopidy.core import CoreListener
 
 from screens.mopidy.screens.library_screen import LibraryScreen
 from screens.mopidy.screens.now_playing_screen import NowPlayingMainScreen
@@ -24,6 +25,9 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 
 class MopidyWebSocketClient(WebSocketClient):
+
+    # def __init__(self, ws_url, protocols):
+    #     super(MopidyWebSocketClient, self).__init__(ws_url, protocols)
 
     def opened(self):
         Clock.schedule_once(self.main_listener.on_connected, -1)
@@ -47,6 +51,8 @@ class MopidyWebSocketClient(WebSocketClient):
             self.close(reason='Bye bye')
 
     def handle_event(self, message):
+        if message['event'] == "handleRemoteCommand":
+            self.handle_remote_command(message['cmd'])
         if message['event'] == "track_playback_started":
             Clock.schedule_once(partial(self.listener.track_playback_started, message['tl_track']), 0.2)
         elif message['event'] == "track_playback_paused":
@@ -59,6 +65,24 @@ class MopidyWebSocketClient(WebSocketClient):
             Clock.schedule_once(partial(self.listener.seeked, message['time_position']), -1)
         elif message['event'] == "tracklist_changed":
             self.send(Utils.get_message(Utils.id_tracklist_loaded, 'core.tracklist.get_tl_tracks'))
+
+    def handle_remote_command(self, cmd):
+        Utils.speak_text(cmd)
+        if cmd == 'fl_plus':
+            Utils.backlight_up()
+        if cmd == 'fl_minus':
+            Utils.backlight_up()
+        if cmd == 'eq':
+            if Utils.lang == 'pl':
+                Utils.lang = 'en'
+            else:
+                Utils.lang = 'pl'
+        if cmd == 'ch_minus':
+            self.listener.change_screen(-1)
+        if cmd == 'ch_plus':
+            self.listener.change_screen(1)
+        if cmd == 'ch':
+            self.listener.change_screen(2)
 
     def handle_id(self, message):
         if message['id'] == Utils.id_cover_loaded:
