@@ -15,6 +15,7 @@ class Utils:
     id_search_result = 15
     id_playlists_loaded = 16
     id_browse_loaded = 17
+    id_volume = 18
     speak_on = False
     lang = 'pl'
 

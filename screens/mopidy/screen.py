@@ -54,35 +54,58 @@ class MopidyWebSocketClient(WebSocketClient):
         if message['event'] == "handleRemoteCommand":
             self.handle_remote_command(message['cmd'])
         if message['event'] == "track_playback_started":
-            Clock.schedule_once(partial(self.listener.track_playback_started, message['tl_track']), 0.2)
+            Clock.schedule_once(
+                partial(
+                    self.listener.track_playback_started, message['tl_track']), 0.2)
         elif message['event'] == "track_playback_paused":
-            Clock.schedule_once(partial(self.listener.track_playback_paused, message['tl_track'], message['time_position']), 0.2)
+            Clock.schedule_once(
+                partial(
+                    self.listener.track_playback_paused, message['tl_track'], message['time_position']), 0.2)
         elif message['event'] == "track_playback_resumed":
-            Clock.schedule_once(partial(self.listener.track_playback_resumed, message['tl_track'], message['time_position']), 0.2)
+            Clock.schedule_once(
+                partial(
+                    self.listener.track_playback_resumed, message['tl_track'], message['time_position']), 0.2)
         elif message['event'] == "track_playback_ended":
-            Clock.schedule_once(partial(self.listener.track_playback_ended, message['tl_track'], message['time_position']), -1)
+            Clock.schedule_once(
+                partial(
+                    self.listener.track_playback_ended, message['tl_track'], message['time_position']), -1)
         elif message['event'] == "seeked":
-            Clock.schedule_once(partial(self.listener.seeked, message['time_position']), -1)
+            Clock.schedule_once(
+                partial(self.listener.seeked, message['time_position']), -1)
         elif message['event'] == "tracklist_changed":
-            self.send(Utils.get_message(Utils.id_tracklist_loaded, 'core.tracklist.get_tl_tracks'))
+            self.send(
+                Utils.get_message(
+                    Utils.id_tracklist_loaded, 'core.tracklist.get_tl_tracks'))
+        elif message['event'] == "volume_changed":
+            self.listener.current_voulme = message['volume']
 
     def handle_remote_command(self, cmd):
         Utils.speak_text(cmd)
         if cmd == 'fl_plus':
             Utils.backlight_up()
         if cmd == 'fl_minus':
-            Utils.backlight_up()
+            Utils.backlight_down()
         if cmd == 'eq':
             if Utils.lang == 'pl':
                 Utils.lang = 'en'
             else:
                 Utils.lang = 'pl'
         if cmd == 'ch_minus':
-            self.listener.change_screen(-1)
+            self.listener.go_to_screen('TrackList')
         if cmd == 'ch_plus':
-            self.listener.change_screen(1)
+            self.listener.go_to_screen('Library')
         if cmd == 'ch':
-            self.listener.change_screen(2)
+            self.listener.go_to_screen('Now Playing')
+        if cmd == 'vol_up':
+            vol = min(int(self.listener.current_voulme) + 5, 100)
+            self.send(
+                Utils.get_message(
+                    Utils.id_volume, 'core.mixer.set_volume', {'volume': vol}))
+        if cmd == 'vol_down':
+            vol = max(int(self.listener.current_voulme) - 5, 0)
+            self.send(
+                Utils.get_message(
+                    Utils.id_volume, 'core.mixer.set_volume', {'volume': vol}))
 
     def handle_id(self, message):
         if message['id'] == Utils.id_cover_loaded:
@@ -113,6 +136,7 @@ class MopidyWebSocketClient(WebSocketClient):
         elif message['id'] == Utils.id_playlists_loaded:
             Clock.schedule_once(partial(self.listener.playlists_loaded, message['result']), -1)
 
+
 class MopidyConnectedScreen(Widget):
 
     def __init__(self, ws, **kwargs):
@@ -131,6 +155,7 @@ class MopidyConnectedScreen(Widget):
         self.current_screen_x = self.ids.current_screen.x
         self.previous_screen_x = self.ids.previous_screen.x
         self.next_screen_x = self.ids.next_screen.text
+        self.current_voulme = 100
 
         print os.path.dirname(
             os.path.abspath(
@@ -156,6 +181,9 @@ class MopidyConnectedScreen(Widget):
         self.ws.send(
             Utils.get_message(
                 Utils.id_browse_loaded, "core.library.browse", {'uri': None}))
+        self.ws.send(
+            Utils.get_message(
+                Utils.id_volume, "core.mixer.get_volume"))
 
     def previous_screen(self, event):
         if self.ids.previous_screen.collide_point(*event.pos):
@@ -174,10 +202,19 @@ class MopidyConnectedScreen(Widget):
             self.ids.screen_manager.transition.direction = 'left'
             name = self.ids.screen_manager.next()
         self.ids.screen_manager.current = name
-        self.ids.current_screen.text = "[b][color=ff3333]" + name + "[/color][/b]"
+        self.ids.current_screen.text = "[b][color=ff3333]" \
+            + name + "[/color][/b]"
         self.ids.previous_screen.text = self.ids.screen_manager.previous()
         self.ids.next_screen.text = self.ids.screen_manager.next()
 
+    def go_to_screen(self, screen_name):
+        self.ids.screen_manager.current = screen_name
+        self.ids.current_screen.text = "[b][color=ff3333]" \
+            + screen_name + "[/color][/b]"
+        self.ids.previous_screen.text = \
+            self.ids.screen_manager.previous()
+        self.ids.next_screen.text = \
+            self.ids.screen_manager.next()
 
     def load_cover(self, tl_track):
         if tl_track is not None:
