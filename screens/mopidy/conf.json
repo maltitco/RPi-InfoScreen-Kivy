@@ -1,11 +1,12 @@
 {
-    "screen": "MopidyScreen",
-    "kv": "mopidy.kv",
-    "enabled": true,
-    "dependencies": ["ws4py"],
+    "enabled": true, 
+    "screen": "MopidyScreen", 
+    "dependencies": [
+        "ws4py"
+    ], 
     "params": {
-        "ip": "localhost",
+        "ip": "localhost", 
         "port": 6680
-    }
-
+    }, 
+    "kv": "mopidy.kv"
 }

@@ -16,7 +16,7 @@ class Utils:
     id_playlists_loaded = 16
     id_browse_loaded = 17
     id_volume = 18
-    speak_on = False
+    speak_on = True
     lang = 'pl'
 
     @staticmethod
@@ -272,6 +272,7 @@ class Utils:
 
     @staticmethod
     def set_actual_brightness(ab):
+        Utils.speak('BRIGHTNESS', val=str(ab))
         os.system(
             'echo ' + str(ab) +
             ' > /sys/class/backlight/rpi_backlight/brightness')

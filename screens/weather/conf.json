@@ -1,15 +1,21 @@
 {
-    "screen": "WeatherScreen",
-    "kv": "weather.kv",
-    "enabled": false,
-    "dependencies": ["requests"],
     "params": {
-        "key": "6ae9a2f3451cd934",
         "locations": [
-            {"name": "Wrocław",
-             "address": "PL/Wroclaw.json"},
-            {"name": "Current location",
-             "address": "autoip.json"}
-         ]
-    }
+            {
+                "name": "Wroc\u0142aw", 
+                "address": "PL/Wroclaw.json"
+            }, 
+            {
+                "name": "Current location", 
+                "address": "autoip.json"
+            }
+        ], 
+        "key": "6ae9a2f3451cd934"
+    }, 
+    "screen": "WeatherScreen", 
+    "dependencies": [
+        "requests"
+    ], 
+    "enabled": false, 
+    "kv": "weather.kv"
 }
