@@ -1,7 +1,5 @@
 from functools import partial
 import json
-# from kivy import Config
-# from kivy.animation import Animation
 from kivy.clock import Clock
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
@@ -20,6 +18,7 @@ from screens.mopidy.utils import Utils
 from mopidy.audio import PlaybackState
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+url = u'rstation:/home/andrzej/Projects/mopidy-rstation/media'
 
 
 class MopidyWebSocketClient(WebSocketClient):
@@ -35,11 +34,11 @@ class MopidyWebSocketClient(WebSocketClient):
         print("Closed down", code, reason)
 
     def received_message(self, m):
-        print('received_message.....start')
-        print(str(m))
-        print('received_message.....end')
+        # print('received_message.....start')
+        # print(str(m))
+        # print('received_message.....end')
         message = json.loads(str(m))
-        print(message)
+        # print(message)
         if 'event' in message:
             self.handle_event(message)
         else:
@@ -101,63 +100,85 @@ class MopidyWebSocketClient(WebSocketClient):
                 Utils.lang = 'pl'
         if cmd == 'ch_minus':
             self.listener.go_to_screen('TrackList')
+            Utils.speak('CHM')
         if cmd == 'ch_plus':
             self.listener.go_to_screen('Library')
+            screen = self.listener.ids.screen_manager.get_screen(
+                self.listener.ids.screen_manager.current)
+            screen.current_item = 0
+            screen.current_uri = None
+            screen.current_dir = [None, url]
+            self.send(Utils.get_message(
+                Utils.id_browse_loaded, "core.library.browse", {'uri': None}))
+            Utils.speak('CHP')
         if cmd == 'ch':
             self.listener.go_to_screen('Now Playing')
+            Utils.speak('CH')
         if cmd == 'vol_up':
-            vol = min(int(self.listener.current_voulme) + 5, 100)
+            vol = min(int(self.listener.current_voulme) + 10, 100)
             self.send(
                 Utils.get_message(
                     Utils.id_volume, 'core.mixer.set_volume', {'volume': vol}))
         if cmd == 'vol_down':
-            vol = max(int(self.listener.current_voulme) - 5, 0)
+            vol = max(int(self.listener.current_voulme) - 10, 0)
             self.send(Utils.get_message(
                 Utils.id_volume, 'core.mixer.set_volume', {'volume': vol}))
         if cmd == 'num8':
             Utils.speak('RADIO_DIR')
             self.listener.go_to_screen('Library')
-            uri = 'rstation:/home/andrzej/Projects/mopidy-rstation/media/Radia'
+            uri = url + '/Radia'
+            screen = self.listener.ids.screen_manager.get_screen('Library')
+            screen.current_uri = uri
+            screen.current_item = 0
+            screen.current_dir = [None, url, uri]
             self.send(Utils.get_message(
                 Utils.id_browse_loaded, "core.library.browse", {'uri': uri}))
-            screen = self.listener.ids.screen_manager.get_screen('Library')
-            screen.current_dir = [None, '..']
 
         if cmd == 'num7':
             Utils.speak('AUDIOBOOKS_DIR')
             self.listener.go_to_screen('Library')
-            uri = 'rstation:/home/andrzej/Projects/'
-            uri += 'mopidy-rstation/media/Audiobooki'
+            uri = url + '/Audiobuki'
+            screen = self.listener.ids.screen_manager.get_screen('Library')
+            screen.current_uri = uri
+            screen.current_item = 0
+            screen.current_dir = [None, url, uri]
             self.send(Utils.get_message(
                 Utils.id_browse_loaded, "core.library.browse", {'uri': uri}))
-            screen = self.listener.ids.screen_manager.get_screen('Library')
-            screen.current_dir = [None, '..']
 
         if cmd == 'num9':
-            self.current_dir = 'Muzyka'
             Utils.speak('MUSIC_DIR')
             self.listener.go_to_screen('Library')
-            uri = 'rstation:/home/andrzej/Projects/'
-            uri += 'mopidy-rstation/media/Muzyka'
+            screen = self.listener.ids.screen_manager.get_screen('Library')
+            uri = url + '/Muzyka'
+            screen.current_uri = uri
+            screen.current_item = 0
+            screen.current_dir = [None, url, uri]
             self.send(Utils.get_message(
                 Utils.id_browse_loaded, "core.library.browse", {'uri': uri}))
-            screen = self.listener.ids.screen_manager.get_screen('Library')
-            screen.current_dir = [None, '..']
 
         if cmd == 'play_pause':
             if screen.name == 'TrackList':
-                pass
+                screen.change_selection()
             if screen.name == 'Library':
-                pass
+                screen.change_selection()
             if screen.name == 'Now Playing':
                 if screen.playing:
                     self.send(Utils.get_message(0, 'core.playback.pause'))
                 else:
                     self.send(Utils.get_message(0, 'core.playback.play'))
         if cmd == 'next':
-            screen.next_item()
+            if screen.name == 'TrackList' or screen.name == 'Library':
+                screen.next_item()
+            if screen.name == 'Now Playing':
+                Utils.speak('NEXT')
+                self.send(Utils.get_message(0, 'core.playback.next'))
+
         if cmd == 'prev':
-            screen.prev_item()
+            if screen.name == 'TrackList' or screen.name == 'Library':
+                screen.prev_item()
+            if screen.name == 'Now Playing':
+                Utils.speak('PREV')
+                self.send(Utils.get_message(0, 'core.playback.previous'))
 
     def handle_id(self, message):
         if message['id'] == Utils.id_cover_loaded:
@@ -228,7 +249,8 @@ class MopidyConnectedScreen(Widget):
         self.ids.screen_manager.add_widget(
             NowPlayingMainScreen(self.ws, name="Now Playing"))
         self.ids.screen_manager.add_widget(
-            TracklistScreen(self.ws, name="TrackList"))
+            TracklistScreen(
+                self.ws, main_screen=self.main_screen, name="TrackList"))
         self.ids.screen_manager.add_widget(
             LibraryScreen(
                 self.ws, main_screen=self.main_screen, name="Library"))
@@ -328,6 +350,8 @@ class MopidyConnectedScreen(Widget):
         self.load_cover(tl_track)
         for screen in self.ids.screen_manager.screens:
             screen.track_playback_started(tl_track)
+        if tl_track is not None:
+            Utils.speak('PLAYING', val=tl_track['track']['name'])
 
     def track_playback_resumed(self, tl_track, time_position, td):
         for screen in self.ids.screen_manager.screens:

@@ -6,7 +6,6 @@ from threading import Thread
 
 
 class Utils:
-
     id_tracklist_loaded = 10
     id_cover_loaded = 11
     id_current_track_loaded = 12
@@ -75,7 +74,7 @@ class Utils:
     @staticmethod
     def convert_text(text):
         try:
-            t = str(text).encode("utf8", "ignore")
+            t = text.encode("utf8", "ignore")
         except Exception as e:
             print(str(e))
             t = 'Error ' + e.message
@@ -108,13 +107,21 @@ class Utils:
             return 0
 
         if ('val' in key):
-            val = Utils.convert_text(key['val'])
+            val = key['val']
+            if type(val) is not str:
+                val = str(val)
+            val = Utils.convert_text(val)
 
         if code == 'PLAY':
             if Utils.lang == 'pl':
                 Utils.speak_text("Graj", False)
             elif Utils.lang == 'en':
                 Utils.speak_text("Play", False)
+        if code == 'PLAYING':
+            if Utils.lang == 'pl':
+                Utils.speak_text("Gramy " + val)
+            elif Utils.lang == 'en':
+                Utils.speak_text("Now playing " + val)
         if code == 'PAUSE':
             if Utils.lang == 'pl':
                 Utils.speak_text("Pauza", False)
@@ -150,7 +157,7 @@ class Utils:
                 Utils.speak_text("Poprzedni", False)
             elif Utils.lang == 'en':
                 Utils.speak_text("Previous", False)
-        if code == 'CHM':
+        if code == 'CHP':
             if Utils.lang == 'pl':
                 Utils.speak_text("Biblioteka")
             elif Utils.lang == 'en':
@@ -160,7 +167,7 @@ class Utils:
                 Utils.speak_text("Odtwarzacz")
             elif Utils.lang == 'en':
                 Utils.speak_text("Player")
-        if code == 'CHP':
+        if code == 'CHM':
             if Utils.lang == 'pl':
                 Utils.speak_text("Listy")
             elif Utils.lang == 'en':
@@ -202,6 +209,11 @@ class Utils:
                 Utils.speak_text("Idz do góry")
             elif Utils.lang == 'en':
                 Utils.speak_text("Go up")
+        if code == 'UP_DIR':
+            if Utils.lang == 'pl':
+                Utils.speak_text("Do góry")
+            elif Utils.lang == 'en':
+                Utils.speak_text("Up")
         if code == 'NO_TRACK':
             if Utils.lang == 'pl':
                 Utils.speak_text("Aktualnie nie jest odtwarzany żaden utwór")

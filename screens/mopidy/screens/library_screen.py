@@ -18,13 +18,17 @@ class LibraryScreen(BaseListScreen):
             Utils.get_message(
                 Utils.id_browse_loaded, "core.library.browse", {'uri': uri}))
 
+    def change_selection(self):
+        item = self.ids.list_view.adapter.get_view(self.current_item)
+        item.trigger_action(duration=0)
+
     def on_selection_change(self, adapter):
+        self.current_item = 0
         if len(self.adapter.selection) > 0:
             data = adapter.data[adapter.selection[0].index]
             if adapter.selection[0].index == 0 \
                and '../' in data['name']:
                     self.go_up()
-                    print("GO UP")
             else:
                 self.current_dir.append(data['uri'])
                 self.browse(data['uri'])
@@ -39,46 +43,69 @@ class LibraryScreen(BaseListScreen):
                     self.ws.send(
                         Utils.get_message(0, "core.playback.play"))
                     self.main_screen.go_to_screen('Now Playing')
+                    Utils.speak('PLAY_URI', val=data['name'])
+                else:
+                    Utils.speak('ENTER_DIR', val=data['name'])
 
     def go_up(self):
-        self.current_dir.pop()
-        uri = self.current_dir[-1]
-        self.browse(uri)
+        if len(self.current_dir) == 1:
+            Utils.speak('CH')
+            self.main_screen.go_to_screen('Now Playing')
+        else:
+            Utils.speak('GO_UP_DIR')
+            self.current_dir.pop()
+            uri = self.current_dir[-1]
+            self.browse(uri)
+
+    def select_current_item(self):
+        i = 0
+        data = []
+        for item in self.adapter.data:
+            item['name'] = item['name'].replace("-> ", "")
+            item['name'] = item['name'].replace(" <-", "")
+            if i == self.current_item:
+                item['name'] = "-> " + item['name'] + " <-"
+            data.append(item)
+            i += 1
+        self.adapter.data = data
+        self.adapter.data.prop.dispatch(self.adapter.data.obj())
 
     def next_item(self):
         self.current_item = min(
             self.current_item + 1, len(self.adapter.data) - 1)
-        self.browse(self.current_uri)
+        view = self.ids.list_view.adapter.get_view(
+            self.current_item)
+        view.select()
+        if view.text == '../' or view.text == '-> ../ <-':
+            Utils.speak('UP_DIR')
+        else:
+            Utils.speak_text(Utils.convert_text(view.text))
+        self.select_current_item()
 
     def prev_item(self):
         self.current_item = max(0, self.current_item - 1)
-        self.browse(self.current_uri)
+        view = self.ids.list_view.adapter.get_view(
+            self.current_item)
+        view.select()
+        if view.text == '../' or view.text == '-> ../ <-':
+            Utils.speak('UP_DIR')
+        else:
+            Utils.speak_text(Utils.convert_text(view.text))
+        self.select_current_item()
 
     def result_loaded(self, result, id):
-        self.current_result = result
-        i = 0
         if id == Utils.id_browse_loaded:
             if len(result) > 0:
                 data = []
                 if len(self.current_dir) > 1:
-                    if self.current_item == 0:
-                        data = [{'name': '-> ../ <-'}]
-                    else:
-                        data = [{'name': '../'}]
+                    data = [{'name': '../'}]
                 for item in result:
-                    if i + 1 == self.current_item:
-                        for key in item.keys():
-                            if key == 'name':
-                                item[key] = "-> " + item[key] + " <-"
                     data.append(item)
-                    i += 1
-                self.adapter.data = data
             else:
                 if len(self.current_dir) > 1:
-                    if self.current_item == 0:
-                        data = [{'name': '-> ../ <-'}]
-                    else:
-                        data = [{'name': '../'}]
+                    data = [{'name': '../'}]
                 else:
                     data = []
-                self.adapter.data = data
+            self.adapter.data = data
+            self.select_current_item()
+        pass
