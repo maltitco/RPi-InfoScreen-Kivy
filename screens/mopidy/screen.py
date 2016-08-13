@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 from functools import partial
 import json
 from kivy.clock import Clock
@@ -18,7 +20,8 @@ from screens.mopidy.utils import Utils
 from mopidy.audio import PlaybackState
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-url = u'rstation:/home/andrzej/Projects/mopidy-rstation/media'
+# url = u'rstation:/home/andrzej/Projects/mopidy-rstation/media'
+url = u'rstation:/home/pi/mopidy-rstation/media'
 
 
 class MopidyWebSocketClient(WebSocketClient):
@@ -383,11 +386,14 @@ class NotConnectedScreen(Label):
 
     def __init__(self, ip, port, main, **kwargs):
         super(NotConnectedScreen, self).__init__(**kwargs)
-        self.text = "Could not connect to mopidy."
+        self.text = "Łączenie z serwerem...\n---> " \
+            + str(ip) + ':' + str(port) + ' <---\n'
+        # 'próba połączenia ' + str(main.tries_to_connect)
         self.main = main
+        Clock.schedule_interval(self.main.connect, 2)
 
     def on_touch_up(self, touch):
-        self.main.connect()
+        self.main.connect(0)
 
 
 class MopidyScreen(Screen):
@@ -396,13 +402,17 @@ class MopidyScreen(Screen):
         super(MopidyScreen, self).__init__(**kwargs)
         self.ip = kwargs["params"]["ip"]
         self.port = kwargs["params"]["port"]
+        self.tries_to_connect = 0
         self.ws_url = 'ws://'+self.ip+':'+str(self.port)+'/mopidy/ws'
         self.not_connected_widget = NotConnectedScreen(
             self.ip, self.port, self)
         self.on_disconnected(0)
-        self.connect()
+        self.connect(0)
 
-    def connect(self):
+    def connect(self, dt):
+        if self.tries_to_connect == -1:
+            return False
+        self.tries_to_connect += 1
         t = Thread(target=self.start_websocket)
         t.start()
 
@@ -413,6 +423,7 @@ class MopidyScreen(Screen):
         self.ws.run_forever()
 
     def on_connected(self, dt):
+        self.tries_to_connect = -1
         self.clear_widgets()
         self.connected_widget = MopidyConnectedScreen(self.ws)
         self.ws.listener = self.connected_widget
