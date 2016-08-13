@@ -30,7 +30,7 @@ class Utils:
 
     @staticmethod
     def get_title_string(tl_track):
-        name = "No name"
+        name = "nazwa..."
         try:
             if 'track' in tl_track:
                 name = tl_track['track']['name']
@@ -42,7 +42,7 @@ class Utils:
 
     @staticmethod
     def get_album_string(tl_track):
-        name = "No album"
+        name = "album..."
         try:
             name = tl_track['track']['album']['name']
         except Exception:
@@ -51,7 +51,7 @@ class Utils:
 
     @staticmethod
     def get_artist_string(tl_track):
-        name = "No artist"
+        name = "artysta..."
         try:
             if len(tl_track['track']['artists']) > 0:
                 name = ""
@@ -96,6 +96,10 @@ class Utils:
                 ' echo "' + text + '" | espeak -v ' + Utils.lang + ' -a 200')
 
     @staticmethod
+    def beep():
+        os.system(" echo -ne '\007'")
+
+    @staticmethod
     def speak_text_thread(text):
             os.system(
                 ' echo "' + text + '" | espeak -v ' + Utils.lang + ' -a 200')
@@ -108,7 +112,7 @@ class Utils:
 
         if ('val' in key):
             val = key['val']
-            if type(val) is not str:
+            if not isinstance(val, str) and not isinstance(val, unicode):
                 val = str(val)
             val = Utils.convert_text(val)
 
@@ -201,9 +205,9 @@ class Utils:
                 Utils.speak_text("Go to " + val)
         if code == 'PLAY_URI':
             if Utils.lang == 'pl':
-                Utils.speak_text("Graj " + val)
+                Utils.speak_text("Włączam " + val)
             elif Utils.lang == 'en':
-                Utils.speak_text("Play " + val)
+                Utils.speak_text("Playing " + val)
         if code == 'GO_UP_DIR':
             if Utils.lang == 'pl':
                 Utils.speak_text("Idz do góry")

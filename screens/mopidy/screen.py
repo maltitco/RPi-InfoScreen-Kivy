@@ -13,8 +13,8 @@ from ws4py.client.threadedclient import WebSocketClient
 
 from screens.mopidy.screens.library_screen import LibraryScreen
 from screens.mopidy.screens.now_playing_screen import NowPlayingMainScreen
-from screens.mopidy.screens.playlists_screen import PlayListsScreen
-from screens.mopidy.screens.search_screen import SearchScreen
+# from screens.mopidy.screens.playlists_screen import PlayListsScreen
+# from screens.mopidy.screens.search_screen import SearchScreen
 from screens.mopidy.screens.tracklist import TracklistScreen
 from screens.mopidy.utils import Utils
 from mopidy.audio import PlaybackState
@@ -37,11 +37,7 @@ class MopidyWebSocketClient(WebSocketClient):
         print("Closed down", code, reason)
 
     def received_message(self, m):
-        # print('received_message.....start')
-        # print(str(m))
-        # print('received_message.....end')
         message = json.loads(str(m))
-        # print(message)
         if 'event' in message:
             self.handle_event(message)
         else:
@@ -86,10 +82,9 @@ class MopidyWebSocketClient(WebSocketClient):
         elif message['event'] == "volume_changed":
             vol = message['volume']
             self.listener.current_voulme = vol
-            Utils.speak('VOL', val=vol)
 
     def handle_remote_command(self, cmd):
-        # Utils.speak_text(cmd)
+        Utils.beep()
         screen = self.listener.ids.screen_manager.get_screen(
             self.listener.ids.screen_manager.current)
         if cmd == 'fl_plus':
@@ -102,10 +97,10 @@ class MopidyWebSocketClient(WebSocketClient):
             else:
                 Utils.lang = 'pl'
         if cmd == 'ch_minus':
-            self.listener.go_to_screen('TrackList')
+            self.listener.go_to_screen('Lista')
             Utils.speak('CHM')
         if cmd == 'ch_plus':
-            self.listener.go_to_screen('Library')
+            self.listener.go_to_screen('Biblioteka')
             screen = self.listener.ids.screen_manager.get_screen(
                 self.listener.ids.screen_manager.current)
             screen.current_item = 0
@@ -115,22 +110,24 @@ class MopidyWebSocketClient(WebSocketClient):
                 Utils.id_browse_loaded, "core.library.browse", {'uri': None}))
             Utils.speak('CHP')
         if cmd == 'ch':
-            self.listener.go_to_screen('Now Playing')
+            self.listener.go_to_screen('Odtwarzacz')
             Utils.speak('CH')
         if cmd == 'vol_up':
             vol = min(int(self.listener.current_voulme) + 10, 100)
             self.send(
                 Utils.get_message(
                     Utils.id_volume, 'core.mixer.set_volume', {'volume': vol}))
+            Utils.speak('VOL', val=vol)
         if cmd == 'vol_down':
             vol = max(int(self.listener.current_voulme) - 10, 0)
             self.send(Utils.get_message(
                 Utils.id_volume, 'core.mixer.set_volume', {'volume': vol}))
+            Utils.speak('VOL', val=vol)
         if cmd == 'num8':
             Utils.speak('RADIO_DIR')
-            self.listener.go_to_screen('Library')
+            self.listener.go_to_screen('Biblioteka')
             uri = url + '/Radia'
-            screen = self.listener.ids.screen_manager.get_screen('Library')
+            screen = self.listener.ids.screen_manager.get_screen('Biblioteka')
             screen.current_uri = uri
             screen.current_item = 0
             screen.current_dir = [None, url, uri]
@@ -139,9 +136,9 @@ class MopidyWebSocketClient(WebSocketClient):
 
         if cmd == 'num7':
             Utils.speak('AUDIOBOOKS_DIR')
-            self.listener.go_to_screen('Library')
+            self.listener.go_to_screen('Biblioteka')
             uri = url + '/Audiobuki'
-            screen = self.listener.ids.screen_manager.get_screen('Library')
+            screen = self.listener.ids.screen_manager.get_screen('Biblioteka')
             screen.current_uri = uri
             screen.current_item = 0
             screen.current_dir = [None, url, uri]
@@ -150,8 +147,8 @@ class MopidyWebSocketClient(WebSocketClient):
 
         if cmd == 'num9':
             Utils.speak('MUSIC_DIR')
-            self.listener.go_to_screen('Library')
-            screen = self.listener.ids.screen_manager.get_screen('Library')
+            self.listener.go_to_screen('Biblioteka')
+            screen = self.listener.ids.screen_manager.get_screen('Biblioteka')
             uri = url + '/Muzyka'
             screen.current_uri = uri
             screen.current_item = 0
@@ -160,26 +157,26 @@ class MopidyWebSocketClient(WebSocketClient):
                 Utils.id_browse_loaded, "core.library.browse", {'uri': uri}))
 
         if cmd == 'play_pause':
-            if screen.name == 'TrackList':
+            if screen.name == 'Lista':
                 screen.change_selection()
-            if screen.name == 'Library':
+            if screen.name == 'Biblioteka':
                 screen.change_selection()
-            if screen.name == 'Now Playing':
+            if screen.name == 'Odtwarzacz':
                 if screen.playing:
                     self.send(Utils.get_message(0, 'core.playback.pause'))
                 else:
                     self.send(Utils.get_message(0, 'core.playback.play'))
         if cmd == 'next':
-            if screen.name == 'TrackList' or screen.name == 'Library':
+            if screen.name == 'Lista' or screen.name == 'Biblioteka':
                 screen.next_item()
-            if screen.name == 'Now Playing':
+            if screen.name == 'Odtwarzacz':
                 Utils.speak('NEXT')
                 self.send(Utils.get_message(0, 'core.playback.next'))
 
         if cmd == 'prev':
-            if screen.name == 'TrackList' or screen.name == 'Library':
+            if screen.name == 'Lista' or screen.name == 'Biblioteka':
                 screen.prev_item()
-            if screen.name == 'Now Playing':
+            if screen.name == 'Odtwarzacz':
                 Utils.speak('PREV')
                 self.send(Utils.get_message(0, 'core.playback.previous'))
 
@@ -250,17 +247,17 @@ class MopidyConnectedScreen(Widget):
         self.ids.previous_screen.on_touch_up = self.previous_screen
         self.ids.next_screen.on_touch_up = self.next_screen
         self.ids.screen_manager.add_widget(
-            NowPlayingMainScreen(self.ws, name="Now Playing"))
+            NowPlayingMainScreen(self.ws, name="Odtwarzacz"))
         self.ids.screen_manager.add_widget(
             TracklistScreen(
-                self.ws, main_screen=self.main_screen, name="TrackList"))
+                self.ws, main_screen=self.main_screen, name="Lista"))
         self.ids.screen_manager.add_widget(
             LibraryScreen(
-                self.ws, main_screen=self.main_screen, name="Library"))
-        self.ids.screen_manager.add_widget(
-            SearchScreen(self.ws, name="Search"))
-        self.ids.screen_manager.add_widget(
-            PlayListsScreen(self.ws, name="Playlists"))
+                self.ws, main_screen=self.main_screen, name="Biblioteka"))
+        # self.ids.screen_manager.add_widget(
+        #     SearchScreen(self.ws, name="Search"))
+        # self.ids.screen_manager.add_widget(
+        #     PlayListsScreen(self.ws, name="Playlists"))
 
         self.current_screen_x = self.ids.current_screen.x
         self.previous_screen_x = self.ids.previous_screen.x
@@ -331,14 +328,30 @@ class MopidyConnectedScreen(Widget):
                     Utils.id_cover_loaded, 'core.library.get_images', params))
 
     def on_cover_loaded(self, result, td):
-        try:
-            if self.current_tl_track['track']['uri'] in result:
-                image = result[self.current_tl_track['track']['uri']][0]['uri']
-                self.ids.image_background.source = image
-                for screen in self.ids.screen_manager.screens:
-                    screen.cover_loaded(image)
-        except Exception:
-            print("Cover not found")
+        fname = url.replace('rstation:', '') + '/Ulubione/covers/' \
+            + self.current_tl_track['track']['name'] \
+            + '.png'
+        if os.path.isfile(fname):
+            self.ids.image_background.source = fname
+            for screen in self.ids.screen_manager.screens:
+                screen.cover_loaded(fname)
+        else:
+            try:
+                if self.current_tl_track['track']['uri'] in result:
+                    i = result[self.current_tl_track['track']['uri']][0]['uri']
+                    self.ids.image_background.source = i
+                    for screen in self.ids.screen_manager.screens:
+                        screen.cover_loaded(i)
+            except Exception:
+                fname = url.replace('rstation:', '') + '/Ulubione/covers/' \
+                    + 'splash.png'
+                if os.path.isfile(fname):
+                    self.ids.image_background.source = fname
+                flogo = url.replace('rstation:', '') + '/Ulubione/covers/' \
+                    + 'logo.png'
+                if os.path.isfile(flogo):
+                    for screen in self.ids.screen_manager.screens:
+                        screen.cover_loaded(flogo)
 
     def stream_title_changed(self, title, td):
         for screen in self.ids.screen_manager.screens:

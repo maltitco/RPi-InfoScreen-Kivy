@@ -34,9 +34,14 @@ class TracklistScreen(BaseListScreen):
 
     def on_selection_change(self, adapter):
         if len(self.adapter.selection) > 0:
-            tlid = self.adapter.data[self.adapter.selection[0].index]['tlid']
+            data = self.adapter.data[self.adapter.selection[0].index]
+            tlid = data['tlid']
+            name = data['track']['name']
             self.ws.send(Utils.get_message(
                 0, 'core.playback.play', {'tlid': tlid}))
+            name = name.replace("-> ", "")
+            name = name.replace(" <-", "")
+            Utils.speak('PLAY_URI', val=name)
         pass
 
     def next_item(self):
@@ -62,12 +67,12 @@ class TracklistScreen(BaseListScreen):
 
     def track_playback_started(self, tl_track):
         self.current_item = 0
-        self.main_screen.go_to_screen('Now Playing')
-        #while not found and item_index < len(self.adapter.data):
+        self.main_screen.go_to_screen('Odtwarzacz')
+        # while not found and item_index < len(self.adapter.data):
         #    if tl_track['tlid'] == self.adapter.data[item_index]['tlid']:
         #        found = True
-        #if found:
-            # True ez abisatzeko
-            #view = self.adapter.get_view(item_index)
-            #self.adapter.handle_selection(item, True)
-            #self.adapter.handle_selection(view)
+        # if found:
+        # True ez abisatzeko
+        # view = self.adapter.get_view(item_index)
+        # self.adapter.handle_selection(item, True)
+        # self.adapter.handle_selection(view)

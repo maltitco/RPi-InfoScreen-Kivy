@@ -42,7 +42,7 @@ class LibraryScreen(BaseListScreen):
                             0, "core.tracklist.add", {"uri": data['uri']}))
                     self.ws.send(
                         Utils.get_message(0, "core.playback.play"))
-                    self.main_screen.go_to_screen('Now Playing')
+                    self.main_screen.go_to_screen('Odtwarzacz')
                     Utils.speak('PLAY_URI', val=data['name'])
                 else:
                     Utils.speak('ENTER_DIR', val=data['name'])
@@ -50,7 +50,7 @@ class LibraryScreen(BaseListScreen):
     def go_up(self):
         if len(self.current_dir) == 1:
             Utils.speak('CH')
-            self.main_screen.go_to_screen('Now Playing')
+            self.main_screen.go_to_screen('Odtwarzacz')
         else:
             Utils.speak('GO_UP_DIR')
             self.current_dir.pop()
