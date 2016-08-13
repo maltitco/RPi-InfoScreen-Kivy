@@ -393,6 +393,7 @@ class NotConnectedScreen(Label):
         Clock.schedule_interval(self.main.connect, 2)
 
     def on_touch_up(self, touch):
+        self.main.tries_to_connect = 0
         self.main.connect(0)
 
 
@@ -431,6 +432,7 @@ class MopidyScreen(Screen):
         self.connected_widget.start_data()
 
     def on_disconnected(self, dt):
+        self.tries_to_connect = 0
         self.clear_widgets()
         self.add_widget(self.not_connected_widget)
 

@@ -1,14 +1,14 @@
 {
     "params": {
         "colour": [
-            0, 
-            200, 
+            0,
+            200,
             200
-        ], 
+        ],
         "language": "english"
-    }, 
-    "screen": "WordClockScreen", 
-    "dependencies": [], 
-    "enabled": true, 
+    },
+    "screen": "WordClockScreen",
+    "dependencies": [],
+    "enabled": false, 
     "kv": "wordclock.kv"
 }
