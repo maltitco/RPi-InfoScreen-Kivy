@@ -406,6 +406,7 @@ class NotConnectedScreen(Label):
         Clock.schedule_interval(self.main.connect, 5)
 
     def on_touch_up(self, touch):
+        print('Connection on touch...')
         self.main.tries_to_connect = 0
         self.main.connect(0)
 
@@ -424,11 +425,9 @@ class MopidyScreen(Screen):
         self.connect(0)
 
     def connect(self, dt):
-        # test if websocket is opened
-        if 1 == 2:
-            pass
         # check if we already have a connection
         if self.tries_to_connect == -1:
+            # return False to disable the Clock.schedule
             return False
 
         self.tries_to_connect += 1
@@ -447,12 +446,16 @@ class MopidyScreen(Screen):
             self.on_disconnected
 
     def on_connected(self, dt):
-        self.tries_to_connect = -1
-        self.clear_widgets()
-        self.connected_widget = MopidyConnectedScreen(self.ws)
-        self.ws.listener = self.connected_widget
-        self.add_widget(self.connected_widget)
-        self.connected_widget.start_data()
+        try:
+            self.tries_to_connect = -1
+            self.clear_widgets()
+            self.connected_widget = MopidyConnectedScreen(self.ws)
+            self.ws.listener = self.connected_widget
+            self.add_widget(self.connected_widget)
+            self.connected_widget.start_data()
+        except Exception as e:
+            print(str(e))
+            self.on_disconnected
 
     def on_disconnected(self, dt):
         self.tries_to_connect = 0
