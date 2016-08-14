@@ -97,6 +97,12 @@ class Utils:
 
     @staticmethod
     def beep():
+        os.system('pkill aplay')
+        t = Thread(target=Utils.beep_thread)
+        t.start()
+
+    @staticmethod
+    def beep_thread():
         cmd = "aplay /home/pi/mopidy-rstation/media/Ulubione/covers/"
         cmd += "receive.wav > /dev/null 2>&1"
         os.system(cmd)
