@@ -97,7 +97,7 @@ class Utils:
 
     @staticmethod
     def beep():
-        os.system(" echo -ne '\007'")
+        os.system("espeak -s 350 -a 350 be > /dev/null 2>&1")
 
     @staticmethod
     def speak_text_thread(text):
