@@ -297,7 +297,7 @@ class Utils:
     def backlight_up():
         try:
             ab = Utils.get_actual_brightness()
-            ab = min(255, int(ab) + 11)
+            ab = min(255, int(ab) + 30)
             ab = max(0, ab)
             Utils.set_actual_brightness(ab)
         except Exception as e:
@@ -307,7 +307,7 @@ class Utils:
     def backlight_down():
         try:
             ab = Utils.get_actual_brightness()
-            ab = min(255, int(ab) - 11)
+            ab = min(255, int(ab) - 30)
             ab = max(0, ab)
             Utils.set_actual_brightness(ab)
         except Exception as e:

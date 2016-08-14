@@ -403,7 +403,7 @@ class NotConnectedScreen(Label):
             + str(ip) + ':' + str(port) + ' <---\n'
         # 'próba połączenia ' + str(main.tries_to_connect)
         self.main = main
-        Clock.schedule_interval(self.main.connect, 2)
+        Clock.schedule_interval(self.main.connect, 5)
 
     def on_touch_up(self, touch):
         self.main.tries_to_connect = 0
@@ -424,17 +424,27 @@ class MopidyScreen(Screen):
         self.connect(0)
 
     def connect(self, dt):
+        # test if websocket is opened
+        if 1 == 2:
+            pass
+        # check if we already have a connection
         if self.tries_to_connect == -1:
             return False
+
         self.tries_to_connect += 1
         t = Thread(target=self.start_websocket)
         t.start()
 
     def start_websocket(self):
-        self.ws = MopidyWebSocketClient(self.ws_url, protocols=['http-only'])
-        self.ws.main_listener = self
-        self.ws.connect()
-        self.ws.run_forever()
+        try:
+            self.ws = MopidyWebSocketClient(
+                self.ws_url, protocols=['http-only'])
+            self.ws.main_listener = self
+            self.ws.connect()
+            self.ws.run_forever()
+        except Exception as e:
+            print(str(e))
+            self.on_disconnected
 
     def on_connected(self, dt):
         self.tries_to_connect = -1
