@@ -97,7 +97,9 @@ class Utils:
 
     @staticmethod
     def beep():
-        os.system("espeak -s 350 -a 350 be > /dev/null 2>&1")
+        cmd = "aplay /home/pi/mopidy-rstation/media/Ulubione/covers/"
+        cmd += "receive.wav > /dev/null 2>&1"
+        os.system(cmd)
 
     @staticmethod
     def speak_text_thread(text):
