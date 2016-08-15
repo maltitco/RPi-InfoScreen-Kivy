@@ -327,9 +327,16 @@ class MopidyConnectedScreen(Widget):
                     Utils.id_cover_loaded, 'core.library.get_images', params))
 
     def on_cover_loaded(self, result, td):
-        fname = url.replace('rstation:', '') + '/Ulubione/covers/' \
-            + self.current_tl_track['track']['name'] \
-            + '.png'
+        try:
+            current_track = self.current_tl_track['track']['name']
+        except Exception:
+            pass
+        if len(current_track) > 0:
+            fname = url.replace('rstation:', '') + '/Ulubione/covers/' \
+                + self.current_tl_track['track']['name'] \
+                + '.png'
+        else:
+            fname = "none"
         if os.path.isfile(fname):
             self.ids.image_background.source = fname
             for screen in self.ids.screen_manager.screens:

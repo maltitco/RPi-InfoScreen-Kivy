@@ -93,12 +93,12 @@ class Utils:
             t.start()
         else:
             os.system(
-                ' echo "' + text + '" | espeak -v ' + Utils.lang + ' > /dev/null 2>&1')
+                ' echo "' + text + '" | espeak -v ' + Utils.lang + ' -a 60 > /dev/null 2>&1')
 
     @staticmethod
     def speak_text_thread(text):
             os.system(
-                ' echo "' + text + '" | espeak -v ' + Utils.lang + ' > /dev/null 2>&1')
+                ' echo "' + text + '" | espeak -v ' + Utils.lang + ' -a 60 > /dev/null 2>&1')
 
     @staticmethod
     def speak(code, *param, **key):
