@@ -96,18 +96,6 @@ class Utils:
                 ' echo "' + text + '" | espeak -v ' + Utils.lang + ' -a 200')
 
     @staticmethod
-    def beep():
-        os.system('pkill aplay')
-        t = Thread(target=Utils.beep_thread)
-        t.start()
-
-    @staticmethod
-    def beep_thread():
-        cmd = "aplay /home/pi/mopidy-rstation/media/Ulubione/covers/"
-        cmd += "receive.wav > /dev/null 2>&1"
-        os.system(cmd)
-
-    @staticmethod
     def speak_text_thread(text):
             os.system(
                 ' echo "' + text + '" | espeak -v ' + Utils.lang + ' -a 200')

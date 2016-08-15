@@ -84,7 +84,6 @@ class MopidyWebSocketClient(WebSocketClient):
             self.listener.current_voulme = vol
 
     def handle_remote_command(self, cmd):
-        Utils.beep()
         screen = self.listener.ids.screen_manager.get_screen(
             self.listener.ids.screen_manager.current)
         if cmd == 'fl_plus':
