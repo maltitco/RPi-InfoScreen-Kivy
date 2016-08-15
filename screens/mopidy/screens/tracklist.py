@@ -19,10 +19,15 @@ class TracklistScreen(BaseListScreen):
         i = 0
         data = []
         for item in self.adapter.data:
-            item['track']['name'] = item['track']['name'].replace("-> ", "")
-            item['track']['name'] = item['track']['name'].replace(" <-", "")
-            if i == self.current_item:
-                item['track']['name'] = "-> " + item['track']['name'] + " <-"
+            try:
+                tn = item['track']['name']
+                tn = tn.replace("-> ", "")
+                tn = tn.replace(" <-", "")
+                item['track']['name'] = tn
+                if i == self.current_item:
+                    item['track']['name'] = "-> " + tn + " <-"
+            except Exception:
+                pass
             i += 1
             data.append(item)
         self.adapter.data = data
@@ -36,9 +41,9 @@ class TracklistScreen(BaseListScreen):
         if len(self.adapter.selection) > 0:
             data = self.adapter.data[self.adapter.selection[0].index]
             tlid = data['tlid']
-            name = data['track']['name']
             self.ws.send(Utils.get_message(
                 0, 'core.playback.play', {'tlid': tlid}))
+            name = data['track']['name']
             name = name.replace("-> ", "")
             name = name.replace(" <-", "")
             Utils.speak('PLAY_URI', val=name)
