@@ -30,7 +30,7 @@ class Utils:
 
     @staticmethod
     def get_title_string(tl_track):
-        name = "nazwa..."
+        name = u'nazwa...'
         try:
             if 'track' in tl_track:
                 name = tl_track['track']['name']
@@ -42,7 +42,7 @@ class Utils:
 
     @staticmethod
     def get_album_string(tl_track):
-        name = "album..."
+        name = u'album...'
         try:
             name = tl_track['track']['album']['name']
         except Exception:
@@ -51,7 +51,7 @@ class Utils:
 
     @staticmethod
     def get_artist_string(tl_track):
-        name = "artysta..."
+        name = u'artysta...'
         try:
             if len(tl_track['track']['artists']) > 0:
                 name = ""
@@ -93,12 +93,14 @@ class Utils:
             t.start()
         else:
             os.system(
-                ' echo "' + text + '" | espeak -v ' + Utils.lang + ' -a 180 > /dev/null 2>&1')
+                ' echo "' + text + '" | espeak -v ' +
+                Utils.lang + ' -a 180 > /dev/null 2>&1')
 
     @staticmethod
     def speak_text_thread(text):
             os.system(
-                ' echo "' + text + '" | espeak -v ' + Utils.lang + ' -a 180 > /dev/null 2>&1')
+                ' echo "' + text + '" | espeak -v ' +
+                Utils.lang + ' -a 180 > /dev/null 2>&1')
 
     @staticmethod
     def speak(code, *param, **key):

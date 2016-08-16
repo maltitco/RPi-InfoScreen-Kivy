@@ -1,6 +1,6 @@
 from kivy.uix.screenmanager import Screen
 
-__author__ = 'ander'
+__author__ = 'araczkowski'
 
 
 class BaseScreen(Screen):

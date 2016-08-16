@@ -1,7 +1,7 @@
 from screens.mopidy.screens.base_list_screen import BaseListScreen
 from screens.mopidy.utils import Utils
 
-__author__ = 'ander'
+__author__ = 'araczkowski'
 
 
 class PlayListsScreen(BaseListScreen):
@@ -12,7 +12,8 @@ class PlayListsScreen(BaseListScreen):
     def on_selection_change(self, adapter):
         if len(self.adapter.selection) > 0:
             self.ws.send(Utils.get_message(0, "core.tracklist.clear"))
-            self.ws.send(Utils.get_message(0, "core.tracklist.add", {"uri": adapter.data[adapter.selection[0].index]['uri']}))
+            self.ws.send(Utils.get_message(
+                0, "core.tracklist.add",
+                {"uri": adapter.data[adapter.selection[0].index]['uri']}))
             self.ws.send(Utils.get_message(0, "core.playback.play"))
             self.adapter.selection = []
-

@@ -15,7 +15,7 @@ from screens.mopidy.screens.library_screen import LibraryScreen
 from screens.mopidy.screens.now_playing_screen import NowPlayingMainScreen
 # from screens.mopidy.screens.playlists_screen import PlayListsScreen
 # from screens.mopidy.screens.search_screen import SearchScreen
-from screens.mopidy.screens.tracklist import TracklistScreen
+# from screens.mopidy.screens.tracklist import TracklistScreen
 from screens.mopidy.utils import Utils
 from mopidy.audio import PlaybackState
 
@@ -96,8 +96,7 @@ class MopidyWebSocketClient(WebSocketClient):
             else:
                 Utils.lang = 'pl'
         if cmd == 'ch_minus':
-            self.listener.go_to_screen('Lista')
-            Utils.speak('CHM')
+            screen.change_selection()
         if cmd == 'ch_plus':
             self.listener.go_to_screen('Biblioteka')
             screen = self.listener.ids.screen_manager.get_screen(
@@ -156,28 +155,24 @@ class MopidyWebSocketClient(WebSocketClient):
                 Utils.id_browse_loaded, "core.library.browse", {'uri': uri}))
 
         if cmd == 'play_pause':
-            if screen.name == 'Lista':
-                screen.change_selection()
-            if screen.name == 'Biblioteka':
-                screen.change_selection()
-            if screen.name == 'Odtwarzacz':
-                if screen.playing:
-                    self.send(Utils.get_message(0, 'core.playback.pause'))
-                else:
-                    self.send(Utils.get_message(0, 'core.playback.play'))
+            screen = self.listener.ids.screen_manager.get_screen('Odtwarzacz')
+            if screen.playing:
+                Utils.speak('PAUSE')
+                self.send(Utils.get_message(0, 'core.playback.pause'))
+            else:
+                Utils.speak('PLAY')
+                self.send(Utils.get_message(0, 'core.playback.play'))
         if cmd == 'next':
-            if screen.name == 'Lista' or screen.name == 'Biblioteka':
-                screen.next_item()
-            if screen.name == 'Odtwarzacz':
-                Utils.speak('NEXT')
-                self.send(Utils.get_message(0, 'core.playback.next'))
+            screen.next_item()
+            # if screen.name == 'Odtwarzacz':
+            #     Utils.speak('NEXT')
+            #     self.send(Utils.get_message(0, 'core.playback.next'))
 
         if cmd == 'prev':
-            if screen.name == 'Lista' or screen.name == 'Biblioteka':
-                screen.prev_item()
-            if screen.name == 'Odtwarzacz':
-                Utils.speak('PREV')
-                self.send(Utils.get_message(0, 'core.playback.previous'))
+            screen.prev_item()
+            # if screen.name == 'Odtwarzacz':
+            #     Utils.speak('PREV')
+            #     self.send(Utils.get_message(0, 'core.playback.previous'))
 
     def handle_id(self, message):
         if message['id'] == Utils.id_cover_loaded:
@@ -243,13 +238,13 @@ class MopidyConnectedScreen(Widget):
         self.ws = ws
         self.main_screen = self
         self.current_tl_track = None
-        self.ids.previous_screen.on_touch_up = self.previous_screen
+        # self.ids.previous_screen.on_touch_up = self.previous_screen
         self.ids.next_screen.on_touch_up = self.next_screen
         self.ids.screen_manager.add_widget(
             NowPlayingMainScreen(self.ws, name="Odtwarzacz"))
-        self.ids.screen_manager.add_widget(
-            TracklistScreen(
-                self.ws, main_screen=self.main_screen, name="Lista"))
+        # self.ids.screen_manager.add_widget(
+        #     TracklistScreen(
+        #         self.ws, main_screen=self.main_screen, name="Lista"))
         self.ids.screen_manager.add_widget(
             LibraryScreen(
                 self.ws, main_screen=self.main_screen, name="Biblioteka"))
@@ -259,16 +254,21 @@ class MopidyConnectedScreen(Widget):
         #     PlayListsScreen(self.ws, name="Playlists"))
 
         self.current_screen_x = self.ids.current_screen.x
-        self.previous_screen_x = self.ids.previous_screen.x
+        # self.previous_screen_x = self.ids.previous_screen.x
         self.next_screen_x = self.ids.next_screen.text
-        self.current_voulme = 100
+        self.current_voulme = 50
 
         self.ids.image_background.source = os.path.dirname(
             os.path.abspath(
                 __file__)) + "/../mopidy/screens/images/background.png"
 
-        self.screen_change_direction = 0
-        self.change_screen(1)
+        # self.screen_change_direction = 0
+        # self.change_screen(1)
+        # self.change_screen(-1)
+        self.ids.current_screen.text = \
+            "[b][color=ff3333]Odtwarzacz[/color][/b]"
+        # self.ids.previous_screen.text = self.ids.screen_manager.previous()
+        self.ids.next_screen.text = self.ids.screen_manager.next()
 
     def start_data(self):
         self.ws.send(
@@ -288,9 +288,9 @@ class MopidyConnectedScreen(Widget):
             Utils.get_message(
                 Utils.id_volume, "core.mixer.get_volume"))
 
-    def previous_screen(self, event):
-        if self.ids.previous_screen.collide_point(*event.pos):
-            self.change_screen(-1)
+    # def previous_screen(self, event):
+    #     if self.ids.previous_screen.collide_point(*event.pos):
+    #         self.change_screen(-1)
 
     def next_screen(self, event):
         if self.ids.next_screen.collide_point(*event.pos):
@@ -307,26 +307,31 @@ class MopidyConnectedScreen(Widget):
         self.ids.screen_manager.current = name
         self.ids.current_screen.text = "[b][color=ff3333]" \
             + name + "[/color][/b]"
-        self.ids.previous_screen.text = self.ids.screen_manager.previous()
+        # self.ids.previous_screen.text = self.ids.screen_manager.previous()
         self.ids.next_screen.text = self.ids.screen_manager.next()
 
     def go_to_screen(self, screen_name):
         self.ids.screen_manager.current = screen_name
         self.ids.current_screen.text = "[b][color=ff3333]" \
             + screen_name + "[/color][/b]"
-        self.ids.previous_screen.text = \
-            self.ids.screen_manager.previous()
+        # self.ids.previous_screen.text = \
+        #     self.ids.screen_manager.previous()
         self.ids.next_screen.text = \
             self.ids.screen_manager.next()
 
     def load_cover(self, tl_track):
         if tl_track is not None:
-            params = {'uris': [tl_track['track']['uri']]}
-            self.ws.send(
-                Utils.get_message(
-                    Utils.id_cover_loaded, 'core.library.get_images', params))
+            try:
+                params = {'uris': [tl_track['track']['uri']]}
+                self.ws.send(
+                    Utils.get_message(
+                        Utils.id_cover_loaded,
+                        'core.library.get_images', params))
+            except Exception as e:
+                print(str(e))
 
     def on_cover_loaded(self, result, td):
+        current_track = ''
         try:
             current_track = self.current_tl_track['track']['name']
         except Exception:
@@ -373,7 +378,10 @@ class MopidyConnectedScreen(Widget):
         for screen in self.ids.screen_manager.screens:
             screen.track_playback_started(tl_track)
         if tl_track is not None:
-            Utils.speak('PLAYING', val=tl_track['track']['name'])
+            try:
+                Utils.speak('PLAYING', val=tl_track['track']['name'])
+            except Exception as e:
+                print(str(e))
 
     def track_playback_resumed(self, tl_track, time_position, td):
         for screen in self.ids.screen_manager.screens:

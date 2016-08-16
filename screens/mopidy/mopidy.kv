@@ -24,17 +24,14 @@
             size_hint_y: 0.1
 
             Label:
-                id: previous_screen
-                text: "No song"
-
-            Label:
                 id: current_screen
-                text: "No song"
+                text: "aktualny"
                 markup: True
+                font_size: '20sp'
 
             Label:
                 id: next_screen
-                text: "No song"
+                text: "nastepny"
 
         ScreenManager:
             id: screen_manager
@@ -45,9 +42,15 @@
     BoxLayout:
         orientation: 'vertical'
 
-        ScreenManager:
-            id: screen_manager
+        BoxLayout:
+            orientation: 'horizontal'
             size_hint_y: 0.8
+
+            ScreenManager:
+                id: screen_manager
+
+            ListView:
+                id: list_view
 
         BoxLayout:
             orientation: 'horizontal'
@@ -83,8 +86,7 @@
 <NowPlayingScreenSong>:
 
     BoxLayout:
-        orientation: 'horizontal'
-
+        orientation: 'vertical'
         AsyncImage:
             id: image
             size_hint_y: 1
@@ -94,18 +96,18 @@
 
         BoxLayout:
             orientation: 'vertical'
-
             Label:
                 id: title
-                text: "No song"
+                text: "Tytuł"
 
             Label:
                 id: album
-                text: "No song"
+                text: "Album"
 
             Label:
                 id: artist
-                text: "No song"
+                text: "Artysta"
+
 
 <TracklistScreen>
     ListView:
