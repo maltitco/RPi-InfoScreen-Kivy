@@ -167,18 +167,21 @@ class NowPlayingMainScreen(BaseScreen):
         self.adapter.data.prop.dispatch(self.adapter.data.obj())
 
     def next_item(self):
-        self.current_item = min(
-            self.current_item + 1, len(self.adapter.data) - 1)
-        view = self.ids.list_view.adapter.get_view(
-            self.current_item)
+        if len(self.adapter.data) == self.current_item + 1:
+            self.current_item = 0
+        else:
+            self.current_item = self.current_item + 1
+        view = self.ids.list_view.adapter.get_view(self.current_item)
         view.select()
         Utils.speak_text(Utils.convert_text(view.text))
         self.select_current_item()
 
     def prev_item(self):
-        self.current_item = max(0, self.current_item - 1)
-        view = self.ids.list_view.adapter.get_view(
-            self.current_item)
+        if self.current_item == 0:
+            self.current_item = len(self.adapter.data) - 1
+        else:
+            self.current_item = self.current_item - 1
+        view = self.ids.list_view.adapter.get_view(self.current_item)
         view.select()
         Utils.speak_text(Utils.convert_text(view.text))
         self.select_current_item()
