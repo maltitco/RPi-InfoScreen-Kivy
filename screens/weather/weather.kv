@@ -29,8 +29,9 @@
         padding: 5, 5
         orientation: "vertical"
         Label:
-            text: root.location
+            text: "Pogoda " + root.location
             size_hint_y: 0.2
+            font_size: 30
 
         BoxLayout:
             padding: 2
@@ -66,6 +67,7 @@
             source: root.icon_url
     Label:
         text: root.weather
+        font_size: 16
 
 <WeatherForecastHourly>
     width: 100
@@ -80,3 +82,4 @@
 
     Label:
         text: root.weather
+        font_size: 14

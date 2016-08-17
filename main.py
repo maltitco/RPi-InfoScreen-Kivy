@@ -1,8 +1,9 @@
 #!/usr/bin/env python
-import os
 import sys
 import json
-
+# remedy for Images on weather screen flashing
+import os
+os.environ['KIVY_IMAGE'] = "pil"
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.graphics import Rectangle, Color
@@ -23,12 +24,12 @@ from core.infoscreen import InfoScreen
 
 # Set the current working directory
 os.chdir(os.path.dirname(os.path.abspath(sys.argv[0])))
-
 VERSION = "0.4.1"
 
 
 class InfoScreenApp(App):
     base = None
+
     def build(self):
         # Window size is hardcoded for resolution of official Raspberry Pi
         # display. Can be altered but plugins may not display correctly.

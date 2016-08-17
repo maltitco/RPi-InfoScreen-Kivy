@@ -20,7 +20,6 @@ from screens.mopidy.utils import Utils
 from mopidy.audio import PlaybackState
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-# url = u'rstation:/home/andrzej/Projects/mopidy-rstation/media'
 url = u'rstation:/home/pi/mopidy-rstation/media'
 
 
@@ -175,60 +174,66 @@ class MopidyWebSocketClient(WebSocketClient):
             #     self.send(Utils.get_message(0, 'core.playback.previous'))
 
     def handle_id(self, message):
-        if message['id'] == Utils.id_cover_loaded:
-            Clock.schedule_once(
-                partial(self.listener.on_cover_loaded, message['result']), -1)
-        elif message['id'] == Utils.id_tracklist_loaded:
-            Clock.schedule_once(
-                partial(
-                    self.listener.tracklist_changed, message['result']), -1)
-        elif message['id'] == Utils.id_current_track_loaded:
-            self.listener.current_tl_track = message['result']
-            Clock.schedule_once(
-                partial(
-                    self.listener.track_playback_started,
-                    message['result']), -1)
-            self.send(
-                Utils.get_message(
-                    Utils.id_current_time_position_loaded,
-                    'core.playback.get_time_position'))
-        elif message['id'] == Utils.id_current_time_position_loaded:
-            Clock.schedule_once(
-                partial(self.listener.seeked, message['result']), -1)
-            self.time_position = message['result']
-            self.send(
-                Utils.get_message(
-                    Utils.id_current_status_loaded, 'core.playback.get_state'))
-        elif message['id'] == Utils.id_current_status_loaded:
-            if message['result'] == PlaybackState.PAUSED:
+        try:
+            if message['id'] == Utils.id_cover_loaded:
                 Clock.schedule_once(
                     partial(
-                        self.listener.track_playback_paused,
-                        self.listener.current_tl_track,
-                        self.time_position), 0.2)
-            elif message['result'] == PlaybackState.STOPPED:
+                        self.listener.on_cover_loaded, message['result']), -1)
+            elif message['id'] == Utils.id_tracklist_loaded:
                 Clock.schedule_once(
                     partial(
-                        self.listener.track_playback_ended,
-                        self.listener.current_tl_track,
-                        self.time_position), 0.2)
-            else:
+                        self.listener.tracklist_changed,
+                        message['result']), -1)
+            elif message['id'] == Utils.id_current_track_loaded:
+                self.listener.current_tl_track = message['result']
                 Clock.schedule_once(
                     partial(
-                        self.listener.track_playback_resumed,
-                        self.listener.current_tl_track,
-                        self.time_position), 0.2)
+                        self.listener.track_playback_started,
+                        message['result']), -1)
+                self.send(
+                    Utils.get_message(
+                        Utils.id_current_time_position_loaded,
+                        'core.playback.get_time_position'))
+            elif message['id'] == Utils.id_current_time_position_loaded:
+                Clock.schedule_once(
+                    partial(self.listener.seeked, message['result']), -1)
+                self.time_position = message['result']
+                self.send(
+                    Utils.get_message(
+                        Utils.id_current_status_loaded,
+                        'core.playback.get_state'))
+            elif message['id'] == Utils.id_current_status_loaded:
+                if message['result'] == PlaybackState.PAUSED:
+                    Clock.schedule_once(
+                        partial(
+                            self.listener.track_playback_paused,
+                            self.listener.current_tl_track,
+                            self.time_position), 0.2)
+                elif message['result'] == PlaybackState.STOPPED:
+                    Clock.schedule_once(
+                        partial(
+                            self.listener.track_playback_ended,
+                            self.listener.current_tl_track,
+                            self.time_position), 0.2)
+                else:
+                    Clock.schedule_once(
+                        partial(
+                            self.listener.track_playback_resumed,
+                            self.listener.current_tl_track,
+                            self.time_position), 0.2)
 
-        elif message['id'] == Utils.id_search_result or \
-                message['id'] == Utils.id_browse_loaded:
-            Clock.schedule_once(
-                partial(
-                    self.listener.result_loaded,
-                    message['result'], message['id']), -1)
-        elif message['id'] == Utils.id_playlists_loaded:
-            Clock.schedule_once(
-                partial(
-                    self.listener.playlists_loaded, message['result']), -1)
+            elif message['id'] == Utils.id_search_result or \
+                    message['id'] == Utils.id_browse_loaded:
+                Clock.schedule_once(
+                    partial(
+                        self.listener.result_loaded,
+                        message['result'], message['id']), -1)
+            elif message['id'] == Utils.id_playlists_loaded:
+                Clock.schedule_once(
+                    partial(
+                        self.listener.playlists_loaded, message['result']), -1)
+        except Exception as e:
+            print(str(e))
 
 
 class MopidyConnectedScreen(Widget):
@@ -417,7 +422,6 @@ class NotConnectedScreen(Label):
             + str(ip) + ':' + str(port) + ' <---\n'
         # 'próba połączenia ' + str(main.tries_to_connect)
         self.main = main
-        Clock.schedule_interval(self.main.connect, 5)
 
     def on_touch_up(self, touch):
         print('Connection on touch...')
@@ -475,6 +479,7 @@ class MopidyScreen(Screen):
         self.tries_to_connect = 0
         self.clear_widgets()
         self.add_widget(self.not_connected_widget)
+        Clock.schedule_interval(self.connect, 25)
 
     def on_stop(self):
         self.ws.close()

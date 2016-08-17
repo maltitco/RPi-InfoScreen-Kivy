@@ -1,21 +1,25 @@
 {
+    "enabled": true,
+    "screen": "WeatherScreen",
+    "dependencies": [
+        "requests"
+    ],
     "params": {
         "locations": [
             {
-                "name": "Wroc\u0142aw", 
-                "address": "PL/Wroclaw.json"
-            }, 
+                "name": "Wrocław",
+                "address": "51.10789,17.03854.json"
+            },
             {
-                "name": "Current location", 
-                "address": "autoip.json"
+                "name": "Bystrzyca Kłodzka",
+                "address": "50.29909,16.64179.json"
+            },
+            {
+                "name": "Szczepanów",
+                "address": "51.19687,16.60922.json"
             }
-        ], 
+        ],
         "key": "6ae9a2f3451cd934"
-    }, 
-    "screen": "WeatherScreen", 
-    "dependencies": [
-        "requests"
-    ], 
-    "enabled": false, 
+    },
     "kv": "weather.kv"
 }

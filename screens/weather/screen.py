@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import os
 import sys
 import requests
@@ -24,14 +26,22 @@ class WeatherForecastHourly(BoxLayout):
     def buildText(self, summary):
         fc = {}
         tm = summary["FCTTIME"]
-        fc["dy"] = "{} {}{}".format(tm["weekday_name_abbrev"],
-                                    tm["hour"],
-                                    tm["ampm"].lower())
-        fc["su"] = summary["condition"]
-        fc["hg"] = summary["temp"]["metric"]
-        fc["po"] = summary["pop"]
-        self.weather = ("{dy}\n{su}\nHigh: "
-                        "{hg}{dg}\nRain: {po}%").format(dg="C", **fc)
+        wna = tm["weekday_name_abbrev"].encode("utf8", "ignore")
+        hour = tm["hour"].encode("utf8", "ignore")
+        ampm = tm["ampm"].encode("utf8", "ignore")
+        fc["dy"] = "{} {}{}".format(wna,
+                                    hour,
+                                    ampm.lower())
+
+        text = summary["condition"].encode("utf8", "ignore")
+        text_new = ''
+        for word in text.split():
+            text_new += word + '\n'
+        fc["su"] = text_new
+        fc["hg"] = summary["temp"]["metric"].encode("utf8", "ignore")
+        fc["po"] = summary["pop"].encode("utf8", "ignore")
+        self.weather = ("{dy}\n{su}\nTmax: "
+                        "{hg}{dg}\nDeszcz: {po}%").format(dg="°C", **fc)
 
 
 class WeatherForecastDay(BoxLayout):
@@ -46,14 +56,14 @@ class WeatherForecastDay(BoxLayout):
 
     def buildText(self, summary):
         fc = {}
-        self.day = summary["date"]["weekday_short"]
-        fc["su"] = summary["conditions"]
-        fc["hg"] = summary["high"]["celsius"]
-        fc["lw"] = summary["low"]["celsius"]
+        self.day = summary["date"]["weekday_short"].encode("utf8", "ignore")
+        fc["su"] = summary["conditions"].encode("utf8", "ignore")
+        fc["hg"] = summary["high"]["celsius"].encode("utf8", "ignore")
+        fc["lw"] = summary["low"]["celsius"].encode("utf8", "ignore")
         fc["po"] = summary["pop"]
         self.icon_url = summary["icon_url"]
-        self.weather = ("{su}\nHigh: {hg}{dg}\n"
-                        "Low: {lw}\nRain: {po}%").format(dg="C", **fc)
+        self.weather = ("{su}\nTmax: {hg}{dg}\n"
+                        "Tmin: {lw}\nDeszcz: {po}%").format(dg="°C", **fc)
 
 
 class WeatherSummary(Screen):
@@ -143,8 +153,8 @@ class WeatherSummary(Screen):
 
 
 class WeatherScreen(Screen):
-    forecast = "http://api.wunderground.com/api/{key}/forecast/q/{location}"
-    hourly = "http://api.wunderground.com/api/{key}/hourly/q/{location}"
+    forecast = "http://api.wunderground.com/api/{key}/forecast/lang:PL/q/{location}"
+    hourly = "http://api.wunderground.com/api/{key}/hourly/lang:PL/q/{location}"
 
     def __init__(self, **kwargs):
         super(WeatherScreen, self).__init__(**kwargs)

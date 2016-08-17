@@ -202,9 +202,12 @@ class NowPlayingScreenSong(BaseScreen):
         super(NowPlayingScreenSong, self).__init__(ws, **kwargs)
 
     def track_playback_started(self, tl_track):
-        self.ids.title.text = Utils.get_title_string(tl_track)
-        self.ids.album.text = Utils.get_album_string(tl_track)
-        self.ids.artist.text = Utils.get_artist_string(tl_track)
+        try:
+            self.ids.title.text = Utils.get_title_string(tl_track)
+            self.ids.album.text = Utils.get_album_string(tl_track)
+            self.ids.artist.text = Utils.get_artist_string(tl_track)
+        except Exception as e:
+            print(str(e))
 
     def cover_loaded(self, cover):
         self.ids.image.source = cover
