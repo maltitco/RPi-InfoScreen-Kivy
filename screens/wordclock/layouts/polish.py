@@ -20,9 +20,9 @@ LAYOUT = (u"JESTIZAMTRZYDZIEŚCI" # 18
           u"ADWDWADZIEŚCIAVPIĘĆ" # 56
           u"TRZYXPIĘTNAŚCIEBPOS"
           u"ÓSMADWUNASTACZWARTA"
-          u"DRUGAPIĄTADPIERWSZA"
-          u"SIÓDMATRZECIASZÓSTA"
-          u"DZIEWIĄTADZIESIĄTAR")
+          u"DRUGAPIĄTADPIERWSZA" #112
+          u"SIÓDMATRZECIASZÓSTA" #x - 132
+          u"DZIEWIĄTADZIESIĄTAR") # 133 - 151
 # Map instructions:
 # The clock works by rounding the time to the nearest 5 minutes.
 # This means that you need to have settngs for each five minute interval "m00"
@@ -55,8 +55,8 @@ MAP = {
        "h06": [63, 64, 65],
        "h07": [75, 76, 77, 78, 79],
        "h08": [90, 91, 92, 93, 94],
-       "h09": [71, 72, 73, 74],
-       "h10": [94, 95, 96],
+       "h09": [133, 134, 135, 136, 137, 138, 139, 140, 141],
+       "h10": [142, 143, 144, 145, 146, 147, 148, 149, 150],
        "h11": [84, 85, 86, 87, 88, 89],
        "h12": [54, 55, 56, 57, 58, 59],
        "am": [],

@@ -290,6 +290,15 @@ class Utils:
         os.system(
             'echo ' + str(ab) +
             ' > /sys/class/backlight/rpi_backlight/brightness')
+        if ab == 0:
+            # turn off the display
+            os.system(
+                'echo 1 > /sys/class/backlight/rpi_backlight/bl_power')
+        else:
+            # turn on the display
+            os.system(
+                'echo 0 > /sys/class/backlight/rpi_backlight/bl_power')
+            os.system('echo -n "\e[13]" > /dev/tty1')
 
     @staticmethod
     def backlight_up():
