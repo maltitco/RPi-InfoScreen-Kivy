@@ -323,6 +323,9 @@ class MopidyConnectedScreen(Widget):
         #     self.ids.screen_manager.previous()
         self.ids.next_screen.text = \
             self.ids.screen_manager.next()
+        screen = self.ids.screen_manager.get_screen(
+            self.ids.screen_manager.current)
+        screen.current_item = 0
 
     def load_cover(self, tl_track):
         if tl_track is not None:

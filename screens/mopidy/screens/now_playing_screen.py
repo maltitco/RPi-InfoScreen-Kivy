@@ -167,24 +167,32 @@ class NowPlayingMainScreen(BaseScreen):
         self.adapter.data.prop.dispatch(self.adapter.data.obj())
 
     def next_item(self):
-        if len(self.adapter.data) == self.current_item + 1:
+        try:
+            if len(self.adapter.data) == self.current_item + 1:
+                self.current_item = 0
+            else:
+                self.current_item = self.current_item + 1
+            view = self.ids.list_view.adapter.get_view(self.current_item)
+            view.select()
+            Utils.speak_text(Utils.convert_text(view.text))
+            self.select_current_item()
+        except Exception as e:
+            print(str(e))
             self.current_item = 0
-        else:
-            self.current_item = self.current_item + 1
-        view = self.ids.list_view.adapter.get_view(self.current_item)
-        view.select()
-        Utils.speak_text(Utils.convert_text(view.text))
-        self.select_current_item()
 
     def prev_item(self):
-        if self.current_item == 0:
-            self.current_item = len(self.adapter.data) - 1
-        else:
-            self.current_item = self.current_item - 1
-        view = self.ids.list_view.adapter.get_view(self.current_item)
-        view.select()
-        Utils.speak_text(Utils.convert_text(view.text))
-        self.select_current_item()
+        try:
+            if self.current_item == 0:
+                self.current_item = len(self.adapter.data) - 1
+            else:
+                self.current_item = self.current_item - 1
+            view = self.ids.list_view.adapter.get_view(self.current_item)
+            view.select()
+            Utils.speak_text(Utils.convert_text(view.text))
+            self.select_current_item()
+        except Exception as e:
+            print(str(e))
+            self.current_item = 0
 
     def change_selection(self):
         item = self.ids.list_view.adapter.get_view(self.current_item)

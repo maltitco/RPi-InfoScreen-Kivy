@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 import sys
 import json
-# remedy for Images on weather screen flashing
 import os
-# os.environ['KIVY_IMAGE'] = "pil"
-# os.environ['KIVY_DOC'] = '1'
+# remedy for Images on weather screen flashing
+os.environ['KIVY_IMAGE'] = "pil"
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.graphics import Rectangle, Color
