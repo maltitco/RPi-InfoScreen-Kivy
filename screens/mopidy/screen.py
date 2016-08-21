@@ -92,8 +92,10 @@ class MopidyWebSocketClient(WebSocketClient):
         if cmd == 'eq':
             if Utils.lang == 'pl':
                 Utils.lang = 'en'
+                Utils.speak_text('English')
             else:
                 Utils.lang = 'pl'
+                Utils.speak_text('Polski')
         if cmd == 'ch_minus':
             screen.change_selection()
         if cmd == 'ch_plus':
@@ -114,12 +116,12 @@ class MopidyWebSocketClient(WebSocketClient):
             self.send(
                 Utils.get_message(
                     Utils.id_volume, 'core.mixer.set_volume', {'volume': vol}))
-            Utils.speak('VOL', val=vol)
+            # Utils.speak('VOL', val=vol)
         if cmd == 'vol_down':
             vol = max(int(self.listener.current_voulme) - 10, 0)
             self.send(Utils.get_message(
                 Utils.id_volume, 'core.mixer.set_volume', {'volume': vol}))
-            Utils.speak('VOL', val=vol)
+            # Utils.speak('VOL', val=vol)
         if cmd == 'num8':
             Utils.speak('RADIO_DIR')
             self.listener.go_to_screen('Biblioteka')

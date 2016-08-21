@@ -286,7 +286,7 @@ class Utils:
 
     @staticmethod
     def set_actual_brightness(ab):
-        Utils.speak('BRIGHTNESS', val=str(ab))
+        # Utils.speak('BRIGHTNESS', val=str(ab))
         os.system(
             'echo ' + str(ab) +
             ' > /sys/class/backlight/rpi_backlight/brightness')
