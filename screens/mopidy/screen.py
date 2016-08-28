@@ -13,9 +13,6 @@ from ws4py.client.threadedclient import WebSocketClient
 
 from screens.mopidy.screens.library_screen import LibraryScreen
 from screens.mopidy.screens.now_playing_screen import NowPlayingMainScreen
-# from screens.mopidy.screens.playlists_screen import PlayListsScreen
-# from screens.mopidy.screens.search_screen import SearchScreen
-# from screens.mopidy.screens.tracklist import TracklistScreen
 from screens.mopidy.utils import Utils
 from mopidy.audio import PlaybackState
 
@@ -100,13 +97,12 @@ class MopidyWebSocketClient(WebSocketClient):
             screen.change_selection()
         if cmd == 'ch_plus':
             self.listener.go_to_screen('Biblioteka')
-            screen = self.listener.ids.screen_manager.get_screen(
-                self.listener.ids.screen_manager.current)
-            screen.current_item = 0
-            screen.current_uri = None
-            screen.current_dir = [None, url]
-            self.send(Utils.get_message(
-                Utils.id_browse_loaded, "core.library.browse", {'uri': None}))
+            # screen = self.listener.ids.screen_manager.get_screen(
+            #     self.listener.ids.screen_manager.current)
+            # screen.current_item = 0
+            # screen.current_dir = [None]
+            # self.send(Utils.get_message(
+            #    Utils.id_browse_loaded, "core.library.browse", {'uri': None}))
             Utils.speak('CHP')
         if cmd == 'ch':
             self.listener.go_to_screen('Odtwarzacz')
@@ -127,8 +123,6 @@ class MopidyWebSocketClient(WebSocketClient):
             self.listener.go_to_screen('Biblioteka')
             uri = url + '/Radia'
             screen = self.listener.ids.screen_manager.get_screen('Biblioteka')
-            screen.current_uri = uri
-            screen.current_item = 0
             screen.current_dir = [None, url, uri]
             self.send(Utils.get_message(
                 Utils.id_browse_loaded, "core.library.browse", {'uri': uri}))
@@ -138,8 +132,6 @@ class MopidyWebSocketClient(WebSocketClient):
             self.listener.go_to_screen('Biblioteka')
             uri = url + '/Audiobuki'
             screen = self.listener.ids.screen_manager.get_screen('Biblioteka')
-            screen.current_uri = uri
-            screen.current_item = 0
             screen.current_dir = [None, url, uri]
             self.send(Utils.get_message(
                 Utils.id_browse_loaded, "core.library.browse", {'uri': uri}))
@@ -149,8 +141,6 @@ class MopidyWebSocketClient(WebSocketClient):
             self.listener.go_to_screen('Biblioteka')
             screen = self.listener.ids.screen_manager.get_screen('Biblioteka')
             uri = url + '/Muzyka'
-            screen.current_uri = uri
-            screen.current_item = 0
             screen.current_dir = [None, url, uri]
             self.send(Utils.get_message(
                 Utils.id_browse_loaded, "core.library.browse", {'uri': uri}))
@@ -165,15 +155,9 @@ class MopidyWebSocketClient(WebSocketClient):
                 self.send(Utils.get_message(0, 'core.playback.play'))
         if cmd == 'next':
             screen.next_item()
-            # if screen.name == 'Odtwarzacz':
-            #     Utils.speak('NEXT')
-            #     self.send(Utils.get_message(0, 'core.playback.next'))
 
         if cmd == 'prev':
             screen.prev_item()
-            # if screen.name == 'Odtwarzacz':
-            #     Utils.speak('PREV')
-            #     self.send(Utils.get_message(0, 'core.playback.previous'))
 
     def handle_id(self, message):
         try:
@@ -245,36 +229,21 @@ class MopidyConnectedScreen(Widget):
         self.ws = ws
         self.main_screen = self
         self.current_tl_track = None
-        # self.ids.previous_screen.on_touch_up = self.previous_screen
         self.ids.next_screen.on_touch_up = self.next_screen
         self.ids.screen_manager.add_widget(
             NowPlayingMainScreen(self.ws, name="Odtwarzacz"))
-        # self.ids.screen_manager.add_widget(
-        #     TracklistScreen(
-        #         self.ws, main_screen=self.main_screen, name="Lista"))
         self.ids.screen_manager.add_widget(
             LibraryScreen(
                 self.ws, main_screen=self.main_screen, name="Biblioteka"))
-        # self.ids.screen_manager.add_widget(
-        #     SearchScreen(self.ws, name="Search"))
-        # self.ids.screen_manager.add_widget(
-        #     PlayListsScreen(self.ws, name="Playlists"))
-
         self.current_screen_x = self.ids.current_screen.x
-        # self.previous_screen_x = self.ids.previous_screen.x
         self.next_screen_x = self.ids.next_screen.text
         self.current_voulme = 50
 
         self.ids.image_background.source = os.path.dirname(
             os.path.abspath(
                 __file__)) + "/../mopidy/screens/images/background.png"
-
-        # self.screen_change_direction = 0
-        # self.change_screen(1)
-        # self.change_screen(-1)
         self.ids.current_screen.text = \
             "[b][color=ff3333]Odtwarzacz[/color][/b]"
-        # self.ids.previous_screen.text = self.ids.screen_manager.previous()
         self.ids.next_screen.text = self.ids.screen_manager.next()
 
     def start_data(self):
@@ -295,10 +264,6 @@ class MopidyConnectedScreen(Widget):
             Utils.get_message(
                 Utils.id_volume, "core.mixer.get_volume"))
 
-    # def previous_screen(self, event):
-    #     if self.ids.previous_screen.collide_point(*event.pos):
-    #         self.change_screen(-1)
-
     def next_screen(self, event):
         if self.ids.next_screen.collide_point(*event.pos):
             self.change_screen(1)
@@ -314,20 +279,20 @@ class MopidyConnectedScreen(Widget):
         self.ids.screen_manager.current = name
         self.ids.current_screen.text = "[b][color=ff3333]" \
             + name + "[/color][/b]"
-        # self.ids.previous_screen.text = self.ids.screen_manager.previous()
         self.ids.next_screen.text = self.ids.screen_manager.next()
+        screen = self.ids.screen_manager.get_screen(
+            self.ids.screen_manager.current)
+        screen.do_init(True)
 
     def go_to_screen(self, screen_name):
         self.ids.screen_manager.current = screen_name
         self.ids.current_screen.text = "[b][color=ff3333]" \
             + screen_name + "[/color][/b]"
-        # self.ids.previous_screen.text = \
-        #     self.ids.screen_manager.previous()
         self.ids.next_screen.text = \
             self.ids.screen_manager.next()
         screen = self.ids.screen_manager.get_screen(
             self.ids.screen_manager.current)
-        screen.current_item = 0
+        screen.do_init(True)
 
     def load_cover(self, tl_track):
         if tl_track is not None:

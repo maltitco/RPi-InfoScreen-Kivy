@@ -2,13 +2,10 @@ from kivy.clock import Clock
 import os
 from screens.mopidy.utils import Utils
 from screens.mopidy.screens.base_screen import BaseScreen
-from kivy.adapters.listadapter import ListAdapter
-from kivy.uix.behaviors import ButtonBehavior
-from kivy.uix.listview import ListItemLabel
+from screens.mopidy.screens.base_list_screen import BaseListScreen
 
 
-class NowPlayingMainScreen(BaseScreen):
-
+class NowPlayingMainScreen(BaseListScreen):
     def __init__(self, ws,  **kwargs):
         super(NowPlayingMainScreen, self).__init__(ws, **kwargs)
         self.ids.slider.on_touch_up = self.on_slider
@@ -26,13 +23,7 @@ class NowPlayingMainScreen(BaseScreen):
         self.ids.previous_button.on_touch_up = self.previous
         self.ids.play_pause_button.on_touch_up = self.play_pause
         self.ids.next_button.on_touch_up = self.next
-
-        self.adapter = ListAdapter(
-            data=[], cls=MopidyListItem, args_converter=self.args_converter)
-        self.adapter.selection_mode = 'single'
-        self.ids.list_view.adapter = self.adapter
-        self.adapter.bind(on_selection_change=self.on_selection_change)
-        self.current_item = 0
+        self.do_init(True)
 
     def stream_title_changed(self, title):
         self.ids.screen_manager.current_screen.stream_title_changed(title)
@@ -41,13 +32,13 @@ class NowPlayingMainScreen(BaseScreen):
         if tl_track is not None:
             self.set_playing(True)
             # Load the data in the next screen
-            self.ids.screen_manager.get_screen(
-                self.ids.screen_manager.next()
-                ).track_playback_started(tl_track)
-            self.ids.screen_manager.transition.direction = 'left'
-
-            # Move to the next screen
-            self.ids.screen_manager.current = self.ids.screen_manager.next()
+            # self.ids.screen_manager.get_screen(
+            #     self.ids.screen_manager.next()
+            #     ).track_playback_started(tl_track)
+            # self.ids.screen_manager.transition.direction = 'left'
+            #
+            # # Move to the next screen
+            # self.ids.screen_manager.current = self.ids.screen_manager.next()
 
             if 'length' in tl_track['track']:
                 self.has_duration = True
@@ -132,80 +123,53 @@ class NowPlayingMainScreen(BaseScreen):
                 os.path.abspath(__file__)) + "/images/ic_play_arrow.png"
 
     # List
+    def do_init(self, full=False):
+        self.current_item = 0
+        self.clear_list_item_selection()
+        # view = self.adapter.get_view(self.current_item)
+        # if view is not None:
+        #     self.adapter.select_item_view(view)
+
+    def change_selection(self):
+        self.on_selection_change(self.ids.list_view.adapter)
+
     def on_selection_change(self, adapter):
-        if len(self.adapter.selection) > 0:
-            data = self.adapter.data[self.adapter.selection[0].index]
+        if len(adapter.selection) > 0:
+            data = adapter.data[adapter.selection[0].index]
             tlid = data['tlid']
             self.ws.send(Utils.get_message(
                 0, 'core.playback.play', {'tlid': tlid}))
             name = data['track']['name']
-            name = name.replace("-> ", "")
-            name = name.replace(" <-", "")
             Utils.speak('PLAY_URI', val=name)
-        pass
 
     def tracklist_changed(self, tracklist):
         self.adapter.data = tracklist
-        self.select_current_item()
-
-    def select_current_item(self):
-        i = 0
-        data = []
-        for item in self.adapter.data:
-            try:
-                tn = item['track']['name']
-                tn = tn.replace("-> ", "")
-                tn = tn.replace(" <-", "")
-                item['track']['name'] = tn
-                if i == self.current_item:
-                    item['track']['name'] = "-> " + tn + " <-"
-            except Exception:
-                pass
-            i += 1
-            data.append(item)
-        self.adapter.data = data
-        self.adapter.data.prop.dispatch(self.adapter.data.obj())
+        self.do_init(False)
 
     def next_item(self):
-        try:
-            if len(self.adapter.data) == self.current_item + 1:
-                self.current_item = 0
-            else:
-                self.current_item = self.current_item + 1
-            view = self.ids.list_view.adapter.get_view(self.current_item)
-            view.select()
-            Utils.speak_text(Utils.convert_text(view.text))
-            self.select_current_item()
-        except Exception as e:
-            print(str(e))
+        self.clear_list_item_selection()
+        if len(self.adapter.data) == self.current_item + 1:
             self.current_item = 0
+        else:
+            self.current_item = self.current_item + 1
+        view = self.adapter.get_view(self.current_item)
+        if view is not None:
+            self.adapter.select_item_view(view)
+            Utils.speak_text(Utils.convert_text(view.text))
 
     def prev_item(self):
-        try:
-            if self.current_item == 0:
-                self.current_item = len(self.adapter.data) - 1
-            else:
-                self.current_item = self.current_item - 1
-            view = self.ids.list_view.adapter.get_view(self.current_item)
-            view.select()
+        self.clear_list_item_selection()
+        if self.current_item == 0:
+            self.current_item = len(self.adapter.data) - 1
+        else:
+            self.current_item = self.current_item - 1
+        view = self.adapter.get_view(self.current_item)
+        if view is not None:
+            self.adapter.select_item_view(view)
             Utils.speak_text(Utils.convert_text(view.text))
-            self.select_current_item()
-        except Exception as e:
-            print(str(e))
-            self.current_item = 0
-
-    def change_selection(self):
-        item = self.ids.list_view.adapter.get_view(self.current_item)
-        item.trigger_action(duration=0)
-
-    def args_converter(self, row_index, x):
-        return {'text': Utils.get_title_string(x),
-                'size_hint_y': None,
-                'height': 45}
 
 
 class NowPlayingScreenSong(BaseScreen):
-
     def __init__(self, ws,  **kwargs):
         super(NowPlayingScreenSong, self).__init__(ws, **kwargs)
 
@@ -222,11 +186,3 @@ class NowPlayingScreenSong(BaseScreen):
 
     def stream_title_changed(self, title):
         self.ids.title.text = title
-
-
-class MopidyListItem(ButtonBehavior, ListItemLabel):
-    def deselect(self, *args):
-        self.is_selected = False
-
-    def select(self, *args):
-        self.is_selected = True

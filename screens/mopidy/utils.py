@@ -298,7 +298,7 @@ class Utils:
             # turn on the display
             os.system(
                 'echo 0 > /sys/class/backlight/rpi_backlight/bl_power')
-            # os.system('echo -ne "\033[13]" > /dev/tty1')
+            os.system('echo -ne "\033[13]" > /dev/tty1')
 
     @staticmethod
     def backlight_up():
