@@ -156,6 +156,12 @@ class NowPlayingMainScreen(BaseListScreen):
         if view is not None:
             self.adapter.select_item_view(view)
             Utils.speak_text(Utils.convert_text(view.text))
+            # scrolling
+            selected_index = self.adapter.selection[0].index
+            if selected_index > 4:
+                self.ids.list_view.scroll_to(selected_index - 4)
+            else:
+                self.ids.list_view.scroll_to(0)
 
     def prev_item(self):
         self.clear_list_item_selection()
@@ -167,6 +173,12 @@ class NowPlayingMainScreen(BaseListScreen):
         if view is not None:
             self.adapter.select_item_view(view)
             Utils.speak_text(Utils.convert_text(view.text))
+            # scrolling
+            selected_index = self.adapter.selection[0].index
+            if selected_index > 4:
+                self.ids.list_view.scroll_to(selected_index - 4)
+            else:
+                self.ids.list_view.scroll_to(0)
 
 
 class NowPlayingScreenSong(BaseScreen):

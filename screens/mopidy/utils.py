@@ -3,6 +3,7 @@ import json
 import os
 import subprocess
 from threading import Thread
+import time
 
 
 class Utils:
@@ -17,6 +18,7 @@ class Utils:
     id_volume = 18
     speak_on = True
     lang = 'pl'
+    speak_time = None
 
     @staticmethod
     def format_time_to_string(seconds_total):
@@ -88,7 +90,7 @@ class Utils:
     @staticmethod
     def speak_text(text, thread=True):
         if thread:
-            os.system('pkill espeak')
+            Utils.speak_time = time.time()
             t = Thread(target=Utils.speak_text_thread, args=(text,))
             t.start()
         else:
@@ -98,9 +100,16 @@ class Utils:
 
     @staticmethod
     def speak_text_thread(text):
-            os.system(
-                ' echo "' + text + '" | espeak -v ' +
-                Utils.lang + ' -a 180 > /dev/null 2>&1')
+            # wait a little
+            time.sleep(0.7)
+            # check if no next button was pressed
+            if time.time() - Utils.speak_time > 0.7:
+                os.system('pkill espeak')
+                os.system(
+                    ' echo "' + text + '" | espeak -v ' +
+                    Utils.lang + ' -a 180 > /dev/null 2>&1')
+            else:
+                pass
 
     @staticmethod
     def speak(code, *param, **key):

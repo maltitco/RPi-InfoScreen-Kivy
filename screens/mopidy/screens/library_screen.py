@@ -17,6 +17,7 @@ class LibraryScreen(BaseListScreen):
             self.browse(None)
         self.current_item = 0
         self.clear_list_item_selection()
+        self.ids.list_view.scroll_to(0)
         # view = self.adapter.get_view(self.current_item)
         # if view is not None:
         #     self.adapter.select_item_view(view)
@@ -78,7 +79,10 @@ class LibraryScreen(BaseListScreen):
         self.ids.list_view.adapter.select_item_view(view)
         # scrolling
         selected_index = self.adapter.selection[0].index
-        self.ids.list_view.scroll_to(selected_index)
+        if selected_index > 4:
+            self.ids.list_view.scroll_to(selected_index - 4)
+        else:
+            self.ids.list_view.scroll_to(0)
 
         if view.text == '../':
             Utils.speak('UP_DIR')
@@ -95,7 +99,10 @@ class LibraryScreen(BaseListScreen):
         self.ids.list_view.adapter.select_item_view(view)
         # scrolling
         selected_index = self.adapter.selection[0].index
-        self.ids.list_view.scroll_to(selected_index)
+        if selected_index > 4:
+            self.ids.list_view.scroll_to(selected_index - 4)
+        else:
+            self.ids.list_view.scroll_to(0)
 
         if view.text == '../':
             Utils.speak('UP_DIR')
