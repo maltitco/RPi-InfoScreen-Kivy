@@ -7,7 +7,6 @@ class LibraryScreen(BaseListScreen):
         super(LibraryScreen, self).__init__(ws, **kwargs)
         self.do_init(True)
         for name, value in kwargs.items():
-            print('LibraryScreen name: ' + str(name))
             if name == 'main_screen':
                 self.main_screen = value
 
